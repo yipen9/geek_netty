@@ -51,7 +51,7 @@ public final class DiscardServer {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
                     .childOption(ChannelOption.ALLOCATOR, UnpooledByteBufAllocator.DEFAULT)
-             .channel(NioServerSocketChannel.class)
+             .channel(NioServerSocketChannel.class)     /** 后续通过{@link ReflectiveChannelFactory} 进行实例化 **/
              .handler(new LoggingHandler(LogLevel.INFO))
              .childHandler(new ChannelInitializer<SocketChannel>() {
                  @Override

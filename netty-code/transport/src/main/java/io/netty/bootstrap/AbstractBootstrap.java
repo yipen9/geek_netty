@@ -275,7 +275,7 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
                         // Registration was successful, so set the correct executor to use.
                         // See https://github.com/netty/netty/issues/2586
                         promise.registered();
-
+                        //注册完成后执行doBind0
                         doBind0(regFuture, channel, localAddress, promise);
                     }
                 }

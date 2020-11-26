@@ -369,6 +369,7 @@ public abstract class AbstractNioChannel extends AbstractChannel {
         for (;;) {
             try {
                 logger.info("initial register： " + 0);
+                //第一次register并不是监听OP_ACCEPT,而是0
                 selectionKey = javaChannel().register(eventLoop().unwrappedSelector(), 0, this);
                 return;
             } catch (CancelledKeyException e) {
