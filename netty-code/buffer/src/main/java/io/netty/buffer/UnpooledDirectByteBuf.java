@@ -574,7 +574,7 @@ public class UnpooledDirectByteBuf extends AbstractReferenceCountedByteBuf {
         ByteBuffer tmpBuf = internalNioBuffer();
         tmpBuf.clear().position(index).limit(index + length);
         try {
-            return in.read(tmpBuf);
+            return in.read(tmpBuf);//正在开始读取channel的地方
         } catch (ClosedChannelException ignored) {
             return -1;
         }
