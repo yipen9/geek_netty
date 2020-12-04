@@ -31,9 +31,11 @@ public class OrderServer {
                 protected void initChannel(NioSocketChannel channel) throws Exception {
                     ChannelPipeline pipeline = channel.pipeline();
                     pipeline.addLast(new OrderFrameDecoder());
-                    pipeline.addLast(new OrderProtocolDecoder());
-                    pipeline.addLast(new OrderProtocolEncoder());
                     pipeline.addLast(new OrderFrameEncoder());
+
+                    pipeline.addLast(new OrderProtocolEncoder());
+                    pipeline.addLast(new OrderProtocolDecoder());
+
                     pipeline.addLast(new LoggingHandler(LogLevel.INFO));
                     pipeline.addLast(new OrderServerHandler());
                 }
