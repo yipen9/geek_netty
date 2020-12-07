@@ -37,11 +37,13 @@ public class OrderServer {
                     pipeline.addLast(new OrderProtocolDecoder());
 
                     pipeline.addLast(new LoggingHandler(LogLevel.INFO));
+
                     pipeline.addLast(new OrderServerHandler());
                 }
             });
 
             ChannelFuture channelFuture = serverBootstrap.bind(8090).sync();
+
             channelFuture.channel().closeFuture().sync();
         }finally {
             group.shutdownGracefully();

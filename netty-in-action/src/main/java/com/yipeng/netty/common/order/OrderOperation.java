@@ -1,9 +1,11 @@
 package com.yipeng.netty.common.order;
 
 import com.yipeng.netty.common.Operation;
+import lombok.Data;
 import lombok.extern.java.Log;
 
 @Log
+@Data
 public class OrderOperation extends Operation {
     private int tableId;
     private String dish;
@@ -22,4 +24,11 @@ public class OrderOperation extends Operation {
         return orderResponse;
     }
 
+    @Override
+    public String toString() {
+        return "OrderOperation{" +
+                "tableId=" + tableId +
+                ", dish='" + dish + '\'' +
+                '}';
+    }
 }
