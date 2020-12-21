@@ -2,13 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="921c63bb-0fa8-413b-93e0-bef5418c4410" name="Default Changelist" comment="定义Decoder">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/yipeng/nio/FileTransportClient.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/yipeng/nio/FileTransportServer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/yipeng/nio/NioDemo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/yipeng/netty/AppTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/yipeng/netty/AppTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/yipeng/nio/FileTransportServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/yipeng/nio/FileTransportServer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../netty-research/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../netty-research/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../netty-research/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../netty-research/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../netty-research/src/main/java/io/netty/example/study/common/MessageHeader.java" beforeDir="false" afterPath="$PROJECT_DIR$/../netty-research/src/main/java/io/netty/example/study/common/MessageHeader.java" afterDir="false" />
@@ -29,10 +24,24 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/nio/FileTransportServer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="490">
-              <caret line="57" column="42" selection-start-line="57" selection-start-column="42" selection-end-line="57" selection-end-column="42" />
+            <state relative-caret-position="340">
+              <caret line="21" column="35" selection-start-line="21" selection-start-column="35" selection-end-line="21" selection-end-column="35" />
               <folding>
                 <element signature="imports" expanded="true" />
+                <element signature="e#4834#4835#0" expanded="true" />
+                <element signature="e#4869#4870#0" expanded="true" />
+                <element signature="e#4911#4912#0" expanded="true" />
+                <element signature="e#4951#4952#0" expanded="true" />
+                <element signature="e#5020#5021#0" expanded="true" />
+                <element signature="e#5059#5060#0" expanded="true" />
+                <element signature="e#5111#5112#0" expanded="true" />
+                <element signature="e#5159#5160#0" expanded="true" />
+                <element signature="e#5232#5233#0" expanded="true" />
+                <element signature="e#5274#5275#0" expanded="true" />
+                <element signature="e#5337#5338#0" expanded="true" />
+                <element signature="e#5391#5392#0" expanded="true" />
+                <element signature="e#5448#5449#0" expanded="true" />
+                <element signature="e#5510#5511#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -107,9 +116,9 @@
         <option value="$PROJECT_DIR$/src/test/java/com/yipeng/netty/AppTest.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/yipeng/nio/Demo.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/yipeng/nio/NioDemo.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/yipeng/nio/FileTransportServer.java" />
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/src/main/java/com/yipeng/nio/FileTransportClient.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/yipeng/nio/FileTransportServer.java" />
       </list>
     </option>
   </component>
@@ -348,7 +357,7 @@
       <workItem from="1608261780883" duration="4172000" />
       <workItem from="1608519182512" duration="32000" />
       <workItem from="1608519724055" duration="9725000" />
-      <workItem from="1608535695889" duration="8339000" />
+      <workItem from="1608535695889" duration="8438000" />
     </task>
     <task id="LOCAL-00001" summary="定义Decoder">
       <created>1606998451732</created>
@@ -378,16 +387,24 @@
       <option name="project" value="LOCAL" />
       <updated>1607333155406</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="属性nio">
+      <created>1608544063269</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1608544063269</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="52167000" />
+    <option name="totallyTimeSpent" value="52266000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.16204691" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.16204691" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="Image Layers" order="3" />
@@ -396,7 +413,7 @@
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.32212582" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.121475056" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.38828632" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -440,7 +457,8 @@
     <MESSAGE value="netty demo" />
     <MESSAGE value="修改" />
     <MESSAGE value="增加客户端解析，以及Log4j配置" />
-    <option name="LAST_COMMIT_MESSAGE" value="增加客户端解析，以及Log4j配置" />
+    <MESSAGE value="属性nio" />
+    <option name="LAST_COMMIT_MESSAGE" value="属性nio" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -912,10 +930,24 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/nio/FileTransportServer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="490">
-          <caret line="57" column="42" selection-start-line="57" selection-start-column="42" selection-end-line="57" selection-end-column="42" />
+        <state relative-caret-position="340">
+          <caret line="21" column="35" selection-start-line="21" selection-start-column="35" selection-end-line="21" selection-end-column="35" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="e#4834#4835#0" expanded="true" />
+            <element signature="e#4869#4870#0" expanded="true" />
+            <element signature="e#4911#4912#0" expanded="true" />
+            <element signature="e#4951#4952#0" expanded="true" />
+            <element signature="e#5020#5021#0" expanded="true" />
+            <element signature="e#5059#5060#0" expanded="true" />
+            <element signature="e#5111#5112#0" expanded="true" />
+            <element signature="e#5159#5160#0" expanded="true" />
+            <element signature="e#5232#5233#0" expanded="true" />
+            <element signature="e#5274#5275#0" expanded="true" />
+            <element signature="e#5337#5338#0" expanded="true" />
+            <element signature="e#5391#5392#0" expanded="true" />
+            <element signature="e#5448#5449#0" expanded="true" />
+            <element signature="e#5510#5511#0" expanded="true" />
           </folding>
         </state>
       </provider>

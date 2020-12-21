@@ -18,6 +18,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * 可能存在问题点， 没有使用固定字节，可能存在tcp粘包和半包问题
+ */
 public class FileTransportServer {
     static Map<String, TransportStatus> transportMap = new ConcurrentHashMap<>();
 
