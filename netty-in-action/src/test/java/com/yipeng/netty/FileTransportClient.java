@@ -1,7 +1,4 @@
-package com.yipeng.nio;
-
-import io.netty.channel.ChannelOption;
-import javafx.scene.input.DataFormat;
+package com.yipeng.netty;
 
 import java.io.EOFException;
 import java.io.File;
@@ -44,7 +41,7 @@ public class FileTransportClient {
 
                         String title = new String(buffer.array());
                         System.out.println(title);
-                        String path = "./elasticsearch-7.9.0-windows-x86_64.zip";
+                        String path = "./elasticsearch-7.6.2.tar.gz";
                         System.out.println("put : " + path);
                         socketChannel.write(ByteBuffer.wrap(path.getBytes()));
                         status = 1;
@@ -56,7 +53,7 @@ public class FileTransportClient {
                             status = 2;
                         }
                         buffer.clear();
-                        File f = new File("/elasticsearch/elasticsearch-7.9.0-windows-x86_64.zip");
+                        File f = new File("/elasticsearch/elasticsearch-7.6.2.tar.gz ");
                         Long size = f.length();
                         System.out.println("file:" + size);
                         buffer = ByteBuffer.allocate(1024);
@@ -67,7 +64,7 @@ public class FileTransportClient {
 
                     if (status == 2) {
                         System.out.println("write file .....");
-                        FileInputStream fileInputStream = new FileInputStream("/elasticsearch/elasticsearch-7.9.0-windows-x86_64.zip");
+                        FileInputStream fileInputStream = new FileInputStream("/elasticsearch/elasticsearch-7.6.2.tar.gz");
 
                         FileChannel fileChannel = fileInputStream.getChannel();
 

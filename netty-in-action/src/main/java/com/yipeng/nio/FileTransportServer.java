@@ -30,7 +30,7 @@ public class FileTransportServer {
         serverSocketChannel.configureBlocking(false);
         serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
         serverSocketChannel.bind(new InetSocketAddress(7070));
-        int bytesize = 0;
+
         while (true) {
             System.out.println("select .....");
             selector.select();
@@ -76,12 +76,12 @@ public class FileTransportServer {
                         buffer.clear();
                     } else {
                         int readSize = socketChannel.read(buffer);
-                        bytesize += readSize;
-                        System.out.println(format5(bytesize * 100.0 / status.size) + "%");
+                        status.bytesize += readSize;
+                        System.out.println(format5(status.bytesize * 100.0 / status.size) + "%");
                         buffer.flip();
-                        if (bytesize < status.size) {
+                        if (status.bytesize < status.size) {
                             status.fileChannel.write(buffer);
-                            if (bytesize % (1024 * 1024 * 10) == 0) {
+                            if (status.bytesize % (1024 * 1024 * 10) == 0) {
                                 status.fileChannel.force(true);
                             }
                             buffer.clear();
@@ -101,6 +101,7 @@ public class FileTransportServer {
     }
 
     static class TransportStatus {
+        int bytesize = 0;
         private FileChannel fileChannel;
 
         public long getSize() {
