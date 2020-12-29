@@ -27,6 +27,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadFactory;
 
 /**
+ * 多线程事件循环组，继承了抽象类，实现了接口，应该是把两者结合起来了，一方面是需要事件执行器，一方面又需要定义事件循环接口
  * Abstract base class for {@link EventLoopGroup} implementations that handles their tasks with multiple threads at
  * the same time.
  */
@@ -34,6 +35,7 @@ public abstract class MultithreadEventLoopGroup extends MultithreadEventExecutor
 
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(MultithreadEventLoopGroup.class);
 
+    //如果默认不传是0，他会用CPU核数*2
     private static final int DEFAULT_EVENT_LOOP_THREADS;
 
     static {

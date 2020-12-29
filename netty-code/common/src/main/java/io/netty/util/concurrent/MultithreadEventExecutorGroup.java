@@ -72,7 +72,12 @@ public abstract class MultithreadEventExecutorGroup extends AbstractEventExecuto
             throw new IllegalArgumentException(String.format("nThreads: %d (expected: > 0)", nThreads));
         }
 
-        if (executor == null) {
+        if (executor == null) {//首先是创建了线程工厂，就跟线程池的线程工厂一样的
+            /**
+             * 这里你会发现怎么前缀变成nioEventLoopGroup-2-，
+             * 因为前面初始化MultithreadEventExecutorGroup的时候，有个叫全局事件执行器GlobalEventExecutor的变量要初始化，
+             * 根据类加载的流程，他会在构造函数之前初始化的
+             */
             executor = new ThreadPerTaskExecutor(newDefaultThreadFactory());
         }
 

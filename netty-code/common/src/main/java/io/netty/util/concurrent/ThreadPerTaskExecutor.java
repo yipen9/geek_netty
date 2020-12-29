@@ -19,6 +19,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadFactory;
 
 //一个task一个thread
+//这个类很干脆，就是设置了一个线程工厂，有任务就创建一个线程执行，
 public final class ThreadPerTaskExecutor implements Executor {
     private final ThreadFactory threadFactory;
 

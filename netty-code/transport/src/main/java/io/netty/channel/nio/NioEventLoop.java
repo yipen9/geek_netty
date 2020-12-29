@@ -126,16 +126,16 @@ public final class NioEventLoop extends SingleThreadEventLoop {
                  EventLoopTaskQueueFactory queueFactory) {
         super(parent, executor, false, newTaskQueue(queueFactory), newTaskQueue(queueFactory),
                 rejectedExecutionHandler);
-        if (selectorProvider == null) {
+        if (selectorProvider == null) { /////选择器提供器
             throw new NullPointerException("selectorProvider");
         }
-        if (strategy == null) {
+        if (strategy == null) {     ///选择器策略，有可能可以推迟select方法而先去执行任
             throw new NullPointerException("selectStrategy");
         }
         provider = selectorProvider;
         final SelectorTuple selectorTuple = openSelector();
         selector = selectorTuple.selector;
-        unwrappedSelector = selectorTuple.unwrappedSelector;
+        unwrappedSelector = selectorTuple.unwrappedSelector;  //nio原始选择器
         selectStrategy = strategy;
     }
 
