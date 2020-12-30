@@ -432,6 +432,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
 
     @Override
     //死循环监听、处理事件
+    //SingleThreadEventExecutor.this.run();
     protected void run() {
         for (;;) {
             try {
