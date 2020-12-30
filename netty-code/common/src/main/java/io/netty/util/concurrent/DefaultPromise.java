@@ -215,7 +215,7 @@ public class DefaultPromise<V> extends AbstractFuture<V> implements Promise<V> {
             while (!isDone()) {
                 incWaiters();
                 try {
-                    wait();
+                    wait();//阻塞
                 } finally {
                     decWaiters();
                 }

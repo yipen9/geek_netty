@@ -116,7 +116,7 @@ public class DefaultChannelPromise extends DefaultPromise<Void> implements Chann
 
     @Override
     public ChannelPromise sync() throws InterruptedException {
-        super.sync();
+        super.sync();       //最终调用 DefaultPromise
         return this;
     }
 
