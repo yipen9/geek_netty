@@ -90,6 +90,10 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
 
     private final CountDownLatch threadLock = new CountDownLatch(1);
     private final Set<Runnable> shutdownHooks = new LinkedHashSet<Runnable>();
+
+//    如果addTask(Runnable)添加任务时能唤醒线程，那么addTaskWakesUp=true；
+//    如果addTask(Runnable)添加任务时不能唤醒线程，那么addTaskWakesUp=false；
+//    NioEventLoop设置为false
     private final boolean addTaskWakesUp;
     private final int maxPendingTasks;
     private final RejectedExecutionHandler rejectedExecutionHandler;
@@ -904,8 +908,8 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
             }
         }
 
-        if (!addTaskWakesUp && wakesUpForTask(task)) {
-            wakeup(inEventLoop);
+        if (!addTaskWakesUp && wakesUpForTask(task)) {//NioEventLoop设置addTaskWakesUp是false
+            wakeup(inEventLoop);    /**{@link io.netty.channel.nio.NioEventLoop#wakeup}*/
         }
     }
 

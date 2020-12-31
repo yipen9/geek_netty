@@ -111,6 +111,10 @@ public final class NioEventLoop extends SingleThreadEventLoop {
      * break out of its selection process. In our case we use a timeout for
      * the select method and the select method will block for that time unless
      * waken up.
+     *
+     * Boolean that controls determines if a blocked Selector.select should
+     *      * break out of its selection process.
+     * Boolean值，用来控制是否一个阻塞的Selector.select是否跳出他的selection过程
      */
     private final AtomicBoolean wakenUp = new AtomicBoolean();
     private volatile long nextWakeupTime = Long.MAX_VALUE;
@@ -761,7 +765,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
     }
 
     @Override
-    protected void wakeup(boolean inEventLoop) {
+    protected void wakeup(boolean inEventLoop) {//执行非inEventLoop的需要唤醒
         if (!inEventLoop && wakenUp.compareAndSet(false, true)) {
             selector.wakeup();
         }
