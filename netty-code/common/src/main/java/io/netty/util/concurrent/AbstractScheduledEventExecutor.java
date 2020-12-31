@@ -65,7 +65,7 @@ public abstract class AbstractScheduledEventExecutor extends AbstractEventExecut
      * @return initial value used for delay and computations based upon a monatomic time source.
      */
     protected static long initialNanoTime() {
-        return ScheduledFutureTask.initialNanoTime();
+        return ScheduledFutureTask.initialNanoTime(); //类编译加载的时间
     }
 
     PriorityQueue<ScheduledFutureTask<?>> scheduledTaskQueue() {

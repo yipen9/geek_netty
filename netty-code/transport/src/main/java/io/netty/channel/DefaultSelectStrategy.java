@@ -25,6 +25,9 @@ final class DefaultSelectStrategy implements SelectStrategy {
 
     private DefaultSelectStrategy() { }
 
+    // selectSupplier这个是什么呢，
+    // 其实就是事件循环NioEventLoop里的selectNowSupplier,
+    // selectNow() 也就立即返回的，所以后面才可以执行任务runAllTasks。
     @Override
     public int calculateStrategy(IntSupplier selectSupplier, boolean hasTasks) throws Exception {
         return hasTasks ? selectSupplier.get() : SelectStrategy.SELECT;
