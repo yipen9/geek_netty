@@ -40,9 +40,9 @@ public class DefaultChannelPipeline implements ChannelPipeline {
 
     static final InternalLogger logger = InternalLoggerFactory.getInstance(DefaultChannelPipeline.class);
 
-    private static final String HEAD_NAME = generateName0(HeadContext.class);
-    private static final String TAIL_NAME = generateName0(TailContext.class);
-
+    private static final String HEAD_NAME = generateName0(HeadContext.class);   //头节点名称
+    private static final String TAIL_NAME = generateName0(TailContext.class);   //尾节点名称
+    //  为当前线程存放类型和名字的映射,避免重名
     private static final FastThreadLocal<Map<Class<?>, String>> nameCaches =
             new FastThreadLocal<Map<Class<?>, String>>() {
         @Override
@@ -51,20 +51,21 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         }
     };
 
+    // 消息大小估算器更新
     private static final AtomicReferenceFieldUpdater<DefaultChannelPipeline, MessageSizeEstimator.Handle> ESTIMATOR =
             AtomicReferenceFieldUpdater.newUpdater(
                     DefaultChannelPipeline.class, MessageSizeEstimator.Handle.class, "estimatorHandle");
-    final AbstractChannelHandlerContext head;
-    final AbstractChannelHandlerContext tail;
+    final AbstractChannelHandlerContext head;   //头处理器上下文
+    final AbstractChannelHandlerContext tail;   //尾处理器上下文
 
-    private final Channel channel;
-    private final ChannelFuture succeededFuture;
-    private final VoidChannelPromise voidPromise;
-    private final boolean touch = ResourceLeakDetector.isEnabled();
+    private final Channel channel;  //通道
+    private final ChannelFuture succeededFuture;    //通道异步结果
+    private final VoidChannelPromise voidPromise;   //任意类型的一步结果
+    private final boolean touch = ResourceLeakDetector.isEnabled(); //是否要资源泄露检测
 
-    private Map<EventExecutorGroup, EventExecutor> childExecutors;
-    private volatile MessageSizeEstimator.Handle estimatorHandle;
-    private boolean firstRegistration = true;
+    private Map<EventExecutorGroup, EventExecutor> childExecutors;  //事件循环组合对应的执行器
+    private volatile MessageSizeEstimator.Handle estimatorHandle;   //消息大小评估处理器
+    private boolean firstRegistration = true;   //第一次注册
 
     /**
      * This is the head of a linked list that is processed by {@link #callHandlerAddedForAllHandlers()} and so process
@@ -73,6 +74,10 @@ public class DefaultChannelPipeline implements ChannelPipeline {
      * We only keep the head because it is expected that the list is used infrequently and its size is small.
      * Thus full iterations to do insertions is assumed to be a good compromised to saving memory and tail management
      * complexity.
+     */
+
+    /** 如果在通道没注册到事件循环之前添加了处理器，则HandlerAdded暂时不触发，被添加到pendingHandlerCallbackHead链表中，到时候就会处理。
+     * 只需要保存头结点就可以，是个链表结构，因为结点不会太多，所以用这个省内存，方便
      */
     private PendingHandlerCallback pendingHandlerCallbackHead;
 
@@ -639,7 +644,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
 
     final void invokeHandlerAddedIfNeeded() {
         assert channel.eventLoop().inEventLoop();
-        if (firstRegistration) {
+        if (firstRegistration) {    //第一次注册
             firstRegistration = false;
             // We are now registered to the EventLoop. It's time to call the callbacks for the ChannelHandlers,
             // that were added before the registration was done.

@@ -364,7 +364,7 @@ public abstract class AbstractNioChannel extends AbstractChannel {
     }
 
     @Override
-    protected void doRegister() throws Exception {
+    protected void doRegister() throws Exception {  //开始接收注册到Worker相关
         boolean selected = false;
         for (;;) {
             try {

@@ -908,7 +908,7 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
             }
         }
 
-        if (!addTaskWakesUp && wakesUpForTask(task)) {//NioEventLoop设置addTaskWakesUp是false
+        if (!addTaskWakesUp && wakesUpForTask(task)) { //NioEventLoop设置addTaskWakesUp是false
             wakeup(inEventLoop);    /**{@link io.netty.channel.nio.NioEventLoop#wakeup}*/
         }
     }

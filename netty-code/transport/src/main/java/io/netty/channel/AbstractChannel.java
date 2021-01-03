@@ -66,12 +66,14 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
      *
      * @param parent
      *        the parent of this channel. {@code null} if there's no parent.
+     *
+     *  NioServerSocketChannel,NioMessageUnsafe,DefaultChannelPipeline
      */
     protected AbstractChannel(Channel parent) {
         this.parent = parent;
         id = newId();
         unsafe = newUnsafe();
-        pipeline = newChannelPipeline();
+        pipeline = newChannelPipeline();    //设置
     }
 
     /**
@@ -449,7 +451,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
         }
 
         @Override
-        public final void register(EventLoop eventLoop, final ChannelPromise promise) {
+        public final void register(EventLoop eventLoop, final ChannelPromise promise) { //注册Channel
             if (eventLoop == null) {
                 throw new NullPointerException("eventLoop");
             }
@@ -500,8 +502,9 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
 
                 // Ensure we call handlerAdded(...) before we actually notify the promise. This is needed as the
                 // user may already fire events through the pipeline in the ChannelFutureListener.
-                pipeline.invokeHandlerAddedIfNeeded();
 
+                //pipeline中，会执行我们自定义的childHandler的handlerAdded方法，会执行ChannelInitializer的initChannel方法
+                pipeline.invokeHandlerAddedIfNeeded();
                 safeSetSuccess(promise);
                 pipeline.fireChannelRegistered();
                 // Only fire a channelActive if the channel has never been registered. This prevents firing

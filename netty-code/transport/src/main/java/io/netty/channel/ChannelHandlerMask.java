@@ -34,7 +34,7 @@ import java.util.WeakHashMap;
 
 final class ChannelHandlerMask {
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(ChannelHandlerMask.class);
-
+//    先看一个标记mask，不同的上下文可能有不同标记，可以理解为响应不同的事件：
     // Using to mask which methods must be called for a ChannelHandler.
     static final int MASK_EXCEPTION_CAUGHT = 1;
     static final int MASK_CHANNEL_REGISTERED = 1 << 1;
@@ -161,6 +161,14 @@ final class ChannelHandlerMask {
         return mask;
     }
 
+    /**
+     * 是否跳过
+     * @param handlerType
+     * @param methodName
+     * @param paramTypes
+     * @return
+     * @throws Exception
+     */
     @SuppressWarnings("rawtypes")
     private static boolean isSkippable(
             final Class<?> handlerType, final String methodName, final Class<?>... paramTypes) throws Exception {

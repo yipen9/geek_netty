@@ -704,6 +704,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
             // to a spin loop
             //处理读请求（断开连接）或接入连接
             if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOps == 0) {
+                //NioMessageUnsafe或者
                 unsafe.read();
             }
         } catch (CancelledKeyException ignored) {

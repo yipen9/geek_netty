@@ -238,7 +238,7 @@ public class LoggingHandler extends ChannelDuplexHandler {
         if (logger.isEnabled(internalLevel)) {
             logger.log(internalLevel, format(ctx, "READ", msg));
         }
-        ctx.fireChannelRead(msg);
+        ctx.fireChannelRead(msg);   //执行下一个
     }
 
     @Override

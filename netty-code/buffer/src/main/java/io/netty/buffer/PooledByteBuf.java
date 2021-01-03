@@ -183,6 +183,7 @@ abstract class PooledByteBuf<T> extends AbstractReferenceCountedByteBuf {
         return offset + index;
     }
 
+    //而且是直接缓冲区DirectByteBuffer，少了一次从内核到用户空间的数据拷贝。
     final ByteBuffer _internalNioBuffer(int index, int length, boolean duplicate) {
         index = idx(index);
         ByteBuffer buffer = duplicate ? newInternalNioBuffer(memory) : internalNioBuffer();

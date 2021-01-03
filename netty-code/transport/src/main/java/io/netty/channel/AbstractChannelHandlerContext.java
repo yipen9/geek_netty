@@ -53,6 +53,9 @@ import static io.netty.channel.ChannelHandlerMask.MASK_USER_EVENT_TRIGGERED;
 import static io.netty.channel.ChannelHandlerMask.MASK_WRITE;
 import static io.netty.channel.ChannelHandlerMask.mask;
 
+/**
+ * AbstractChannelHandlerContext 链表
+ */
 abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, ResourceLeakHint {
 
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(AbstractChannelHandlerContext.class);
@@ -101,7 +104,7 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
         this.name = ObjectUtil.checkNotNull(name, "name");
         this.pipeline = pipeline;
         this.executor = executor;
-        this.executionMask = mask(handlerClass);
+        this.executionMask = mask(handlerClass);    //创建Mask缓存
         // Its ordered if its driven by the EventLoop or the given Executor is an instanceof OrderedEventExecutor.
         ordered = executor == null || executor instanceof OrderedEventExecutor;
     }
@@ -354,8 +357,10 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
     }
 
     static void invokeChannelRead(final AbstractChannelHandlerContext next, Object msg) {
+        //看msg是不是引用计数接口ReferenceCounted类型，不是就直接返回msg，其实是做资源泄露检测
         final Object m = next.pipeline.touch(ObjectUtil.checkNotNull(msg, "msg"), next);
-        EventExecutor executor = next.executor();
+        EventExecutor executor = next.executor();//获取next的执行器，如果为null就是通道的NioEventLoop
+        //如果执行器线程就是当前线程，就调用invokeChannelRead，传入NioSocketChannel
         if (executor.inEventLoop()) {
             next.invokeChannelRead(m);
         } else {
@@ -369,14 +374,14 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
     }
 
     private void invokeChannelRead(Object msg) {
-        if (invokeHandler()) {
+        if (invokeHandler()) {//是否已经被添加到管道
             try {
                 ((ChannelInboundHandler) handler()).channelRead(this, msg);
             } catch (Throwable t) {
                 notifyHandlerException(t);
             }
         } else {
-            fireChannelRead(msg);
+            fireChannelRead(msg);   //直接传递到下一个可以处理消息的通道上下文
         }
     }
 
@@ -913,6 +918,8 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
         return false;
     }
 
+    //找下一个能不能处理这个事件的入站上下文，找不到就返回自己
+    //这里就会去找HeadContext的下一个，也就是我们放进去的含有ServerBootstrapAcceptor的上下文DefaultChannelHandlerContext。
     private AbstractChannelHandlerContext findContextInbound(int mask) {
         AbstractChannelHandlerContext ctx = this;
         do {
