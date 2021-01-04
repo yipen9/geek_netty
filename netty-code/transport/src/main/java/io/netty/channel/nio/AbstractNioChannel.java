@@ -41,7 +41,7 @@ public abstract class AbstractNioChannel extends AbstractChannel {
             InternalLoggerFactory.getInstance(AbstractNioChannel.class);
 
     private final SelectableChannel ch;
-    protected final int readInterestOp;
+    protected final int readInterestOp; //NioServerSocketChannel，初始化为SelectionKey.OP_ACCEPT
     volatile SelectionKey selectionKey;
     boolean readPending;
     private final Runnable clearReadPendingRunnable = new Runnable() {

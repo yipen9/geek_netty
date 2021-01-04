@@ -1430,6 +1430,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
             ctx.fireChannelInactive();
         }
 
+        //其实他什么都没做，就是向后传递
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg) {
             ctx.fireChannelRead(msg);
@@ -1441,7 +1442,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
 
             readIfIsAutoRead();
         }
-
+        //如果配置了自动读，就会开始去设置监听通道事件：
         private void readIfIsAutoRead() {
             if (channel.config().isAutoRead()) {
                 channel.read();
