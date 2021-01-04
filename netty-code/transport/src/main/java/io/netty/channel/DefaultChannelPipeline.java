@@ -55,6 +55,11 @@ public class DefaultChannelPipeline implements ChannelPipeline {
     private static final AtomicReferenceFieldUpdater<DefaultChannelPipeline, MessageSizeEstimator.Handle> ESTIMATOR =
             AtomicReferenceFieldUpdater.newUpdater(
                     DefaultChannelPipeline.class, MessageSizeEstimator.Handle.class, "estimatorHandle");
+
+    /**
+     * 所有出站的操作最后都是通过head来实现具体io操作。
+     * head同时实现了inbount与outbound两个接口，所以所有入站操作第一个是到达head,所有出站操作最后一个到达head
+     */
     final AbstractChannelHandlerContext head;   //头处理器上下文
     final AbstractChannelHandlerContext tail;   //尾处理器上下文
 
@@ -166,9 +171,10 @@ public class DefaultChannelPipeline implements ChannelPipeline {
             // If the registered is false it means that the channel was not registered on an eventLoop yet.
             // In this case we add the context to the pipeline and add a task that will call
             // ChannelHandler.handlerAdded(...) once the channel is registered.
+            //如果在通道没注册到事件循环之前添加了处理器，则HandlerAdded暂时不触发
             if (!registered) {
                 newCtx.setAddPending();
-                callHandlerCallbackLater(newCtx, true);
+                callHandlerCallbackLater(newCtx, true); //添加到pendingHandlerCallbackHead链表后
                 return this;
             }
 
@@ -643,6 +649,10 @@ public class DefaultChannelPipeline implements ChannelPipeline {
     }
 
     final void invokeHandlerAddedIfNeeded() {
+        /**
+         * {@link AbstractChannel.AbstractUnsafe#register0(ChannelPromise)}
+         * 注册完会调用
+         * */
         assert channel.eventLoop().inEventLoop();
         if (firstRegistration) {    //第一次注册
             firstRegistration = false;
@@ -927,7 +937,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
 
     @Override
     public final ChannelPipeline fireChannelRead(Object msg) {
-        AbstractChannelHandlerContext.invokeChannelRead(head, msg);
+        AbstractChannelHandlerContext.invokeChannelRead(head, msg);     //从head开始执行
         return this;
     }
 
@@ -1252,6 +1262,8 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         }
     }
 
+    // tail这个ChannelHandlerContext实现了ChannelInboundHandler接口，
+    // 作为最后一个inboundHandler, 基本上是吞掉所有消息，一些接口会做消息的释放。
     // A special catch-all handler that handles both bytes and messages.
     final class TailContext extends AbstractChannelHandlerContext implements ChannelInboundHandler {
 
@@ -1321,7 +1333,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
 
         HeadContext(DefaultChannelPipeline pipeline) {
             super(pipeline, null, HEAD_NAME, HeadContext.class);
-            unsafe = pipeline.channel().unsafe();
+            unsafe = pipeline.channel().unsafe();   //根据不同的Channel，实现不同的unsafe
             setAddComplete();
         }
 

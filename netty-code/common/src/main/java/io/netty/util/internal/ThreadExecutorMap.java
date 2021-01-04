@@ -54,7 +54,7 @@ public final class ThreadExecutorMap {
         return new Executor() {
             @Override
             public void execute(final Runnable command) {
-                executor.execute(apply(command, eventExecutor));
+                executor.execute(apply(command, eventExecutor));    //ThreadPerTaskExecutor,真正创建线程
             }
         };
     }

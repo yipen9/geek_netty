@@ -67,13 +67,13 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
      * @param parent
      *        the parent of this channel. {@code null} if there's no parent.
      *
-     *  NioServerSocketChannel,NioMessageUnsafe,DefaultChannelPipeline
+     * 设置 NioServerSocketChannel,NioMessageUnsafe,DefaultChannelPipeline
      */
     protected AbstractChannel(Channel parent) {
         this.parent = parent;
         id = newId();
         unsafe = newUnsafe();
-        pipeline = newChannelPipeline();    //设置
+        pipeline = newChannelPipeline();
     }
 
     /**
@@ -465,7 +465,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
                 return;
             }
 
-            AbstractChannel.this.eventLoop = eventLoop;
+            AbstractChannel.this.eventLoop = eventLoop;     /**{@link io.netty.channel.socket.nio.NioServerSocketChannel} 绑定Boss对应的NioEventLoop*/
 
             if (eventLoop.inEventLoop()) {
                 register0(promise);

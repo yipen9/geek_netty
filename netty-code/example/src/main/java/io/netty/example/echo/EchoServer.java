@@ -21,8 +21,10 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
+import io.netty.channel.DefaultEventLoop;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.EpollEventLoopGroup;
+import io.netty.channel.nio.NioEventLoop;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioChannelOption;
@@ -32,6 +34,10 @@ import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
+import io.netty.util.concurrent.DefaultEventExecutor;
+import io.netty.util.concurrent.EventExecutorGroup;
+
+import java.util.concurrent.Executors;
 
 /**
  * Echoes back any received data from a client.
@@ -51,6 +57,8 @@ public final class EchoServer {
             sslCtx = null;
         }
 
+//        设置自定义的EventExecutorGroup执行ChannelHandler
+        final DefaultEventLoop defaultEventExecutor = new DefaultEventLoop(Executors.newFixedThreadPool(1));
         // Configure the server.
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -74,7 +82,8 @@ public final class EchoServer {
                      if (sslCtx != null) {
                          p.addLast(sslCtx.newHandler(ch.alloc()));
                      }
-                     p.addLast(new LoggingHandler(LogLevel.INFO));
+                     p.addLast(defaultEventExecutor, new LoggingHandler(LogLevel.INFO));
+//                     p.addLast(new LoggingHandler(LogLevel.INFO));
                      p.addLast(serverHandler);
                  }
              });
