@@ -876,8 +876,8 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
 
             int size;
             try {
-                msg = filterOutboundMessage(msg);
-                size = pipeline.estimatorHandle().size(msg);
+                msg = filterOutboundMessage(msg);   //封装成直接缓冲区
+                size = pipeline.estimatorHandle().size(msg);//获取缓冲区大小
                 if (size < 0) {
                     size = 0;
                 }
@@ -887,7 +887,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
                 return;
             }
 
-            outboundBuffer.addMessage(msg, size, promise);
+            outboundBuffer.addMessage(msg, size, promise);//往出站缓冲区添加消息
         }
 
         @Override
@@ -906,7 +906,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
 
         @SuppressWarnings("deprecation")
         protected void flush0() {
-            if (inFlush0) {
+            if (inFlush0) { //没有待冲刷的操作
                 // Avoid re-entrance
                 return;
             }

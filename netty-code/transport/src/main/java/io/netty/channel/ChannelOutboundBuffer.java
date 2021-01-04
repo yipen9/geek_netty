@@ -108,6 +108,8 @@ public final class ChannelOutboundBuffer {
     /**
      * Add given message to this {@link ChannelOutboundBuffer}. The given {@link ChannelPromise} will be notified once
      * the message was written.
+     *
+     * 这里才是将直接缓冲区添加到出站缓冲区中，不过是会创建一个实体Entry，然后用一个单链表结构来存取的，
      */
     public void addMessage(Object msg, int size, ChannelPromise promise) {
         Entry entry = Entry.newInstance(msg, size, total(msg), promise);
@@ -119,12 +121,12 @@ public final class ChannelOutboundBuffer {
         }
         tailEntry = entry;
         if (unflushedEntry == null) {
-            unflushedEntry = entry;
+            unflushedEntry = entry; //指向第一个未冲刷的实体
         }
 
         // increment pending bytes after adding message to the unflushed arrays.
         // See https://github.com/netty/netty/issues/1619
-        incrementPendingOutboundBytes(entry.pendingSize, false);
+        incrementPendingOutboundBytes(entry.pendingSize, false);    //增加待冲刷的消息
     }
 
     /**
@@ -136,24 +138,24 @@ public final class ChannelOutboundBuffer {
         // where added in the meantime.
         //
         // See https://github.com/netty/netty/issues/2577
-        Entry entry = unflushedEntry;
-        if (entry != null) {
+        Entry entry = unflushedEntry;   //第一个没冲刷的数据，也是链表的第一个
+        if (entry != null) {    //有数据才刷了
             if (flushedEntry == null) {
                 // there is no flushedEntry yet, so start with the entry
-                flushedEntry = entry;
+                flushedEntry = entry;   //设置第一个要冲刷的实体
             }
             do {
                 flushed ++;
-                if (!entry.promise.setUncancellable()) {
+                if (!entry.promise.setUncancellable()) {    //如果取消的话需要回收内存
                     // Was cancelled so make sure we free up memory and notify about the freed bytes
                     int pending = entry.cancel();
                     decrementPendingOutboundBytes(pending, false, true);
                 }
-                entry = entry.next;
+                entry = entry.next; //遍历冲刷是否有取消的
             } while (entry != null);
 
             // All flushed so reset unflushedEntry
-            unflushedEntry = null;
+            unflushedEntry = null;  //重置未冲刷的
         }
     }
 
@@ -605,7 +607,7 @@ public final class ChannelOutboundBuffer {
             //设置unwritable
             if (UNWRITABLE_UPDATER.compareAndSet(this, oldValue, newValue)) {
                 if (oldValue == 0 && newValue != 0) {
-                    fireChannelWritabilityChanged(invokeLater);
+                    fireChannelWritabilityChanged(invokeLater); //开始是0，后来变为非0，就是不可写了
                 }
                 break;
             }

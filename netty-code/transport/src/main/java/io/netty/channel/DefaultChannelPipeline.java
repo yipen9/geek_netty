@@ -948,7 +948,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
     }
 
     @Override
-    public final ChannelPipeline fireChannelWritabilityChanged() {
+    public final ChannelPipeline fireChannelWritabilityChanged() {  //触发可写的改变
         AbstractChannelHandlerContext.invokeChannelWritabilityChanged(head);
         return this;
     }
@@ -1387,10 +1387,13 @@ public class DefaultChannelPipeline implements ChannelPipeline {
             unsafe.beginRead();
         }
 
+
+        //无论是写还是冲刷，都是从一个处理器传递到前一个出站处理器，如果不是head的话，一定要继续传递，否则这个消息就没了，
         @Override
         public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) {
             unsafe.write(msg, promise);
         }
+
 
         @Override
         public void flush(ChannelHandlerContext ctx) {

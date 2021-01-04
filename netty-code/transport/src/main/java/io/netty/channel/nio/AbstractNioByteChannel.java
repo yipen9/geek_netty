@@ -255,6 +255,13 @@ public abstract class AbstractNioByteChannel extends AbstractNioChannel {
         return WRITE_STATUS_SNDBUF_FULL;
     }
 
+    /**
+     * 最终当然还是封装了NIO的SocketChannel 的write方法来进行写数据啦，
+     * 他会进行16次自旋尝试，来写消息，直到出站缓冲区的数据全部写出去了，
+     * 然后就clearOpWrite清除OP_WRITE设置，返回，否则要去设置任务是否写操作incompleteWrite
+     * @param in
+     * @throws Exception
+     */
     @Override
     protected void doWrite(ChannelOutboundBuffer in) throws Exception {
         int writeSpinCount = config().getWriteSpinCount();
@@ -262,28 +269,28 @@ public abstract class AbstractNioByteChannel extends AbstractNioChannel {
             Object msg = in.current();
             if (msg == null) {
                 // Wrote all messages.
-                clearOpWrite();
+                clearOpWrite();//然后就clearOpWrite清除OP_WRITE设置
                 // Directly return here so incompleteWrite(...) is not called.
                 return;
             }
             writeSpinCount -= doWriteInternal(in, msg);
         } while (writeSpinCount > 0);
 
-        incompleteWrite(writeSpinCount < 0);
+        incompleteWrite(writeSpinCount < 0);  //否则要去设置任务是否写操作incompleteWrite
     }
 
     @Override
     protected final Object filterOutboundMessage(Object msg) {
         if (msg instanceof ByteBuf) {
             ByteBuf buf = (ByteBuf) msg;
-            if (buf.isDirect()) {
+            if (buf.isDirect()) {//如果是直接缓冲区就返回
                 return msg;
             }
 
-            return newDirectBuffer(buf);
+            return newDirectBuffer(buf);//否则封装成直接缓冲区就可以零拷贝
         }
 
-        if (msg instanceof FileRegion) {
+        if (msg instanceof FileRegion) {//文件缓冲区也可以零拷贝
             return msg;
         }
 
