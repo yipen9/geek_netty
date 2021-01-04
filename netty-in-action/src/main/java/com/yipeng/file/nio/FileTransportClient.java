@@ -1,7 +1,4 @@
-package com.yipeng.nio;
-
-import io.netty.channel.ChannelOption;
-import javafx.scene.input.DataFormat;
+package com.yipeng.file.nio;
 
 import java.io.EOFException;
 import java.io.File;

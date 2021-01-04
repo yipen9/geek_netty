@@ -1,8 +1,4 @@
-package com.yipeng.nio;
-
-import io.netty.buffer.ByteBuf;
-import javafx.scene.input.DataFormat;
-import sun.nio.ch.FileChannelImpl;
+package com.yipeng.file.nio;
 
 import java.io.File;
 import java.io.FileOutputStream;

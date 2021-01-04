@@ -1,8 +1,7 @@
-package com.yipeng.nio;
+package com.yipeng.file.nio;
 
 
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 

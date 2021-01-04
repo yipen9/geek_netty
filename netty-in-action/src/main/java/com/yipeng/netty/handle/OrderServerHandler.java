@@ -18,7 +18,7 @@ public class OrderServerHandler extends SimpleChannelInboundHandler<RequestMessa
         ResponseMessage responseMessage = new ResponseMessage();
         responseMessage.setMessageHeader(requestMessage.getMessageHeader());
         responseMessage.setMessageBody(operationResult);
-
+        channelHandlerContext.channel();
         channelHandlerContext.writeAndFlush(responseMessage);
     }
 }

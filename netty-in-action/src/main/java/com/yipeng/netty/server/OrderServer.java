@@ -44,6 +44,7 @@ public class OrderServer {
 
             ChannelFuture channelFuture = serverBootstrap.bind(8090).sync();
 
+
             channelFuture.channel().closeFuture().sync();
         }finally {
             group.shutdownGracefully();
