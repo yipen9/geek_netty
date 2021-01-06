@@ -27,7 +27,7 @@ public abstract class AbstractReferenceCountedByteBuf extends AbstractByteBuf {
     private static final long REFCNT_FIELD_OFFSET =
             ReferenceCountUpdater.getUnsafeOffset(AbstractReferenceCountedByteBuf.class, "refCnt");
     private static final AtomicIntegerFieldUpdater<AbstractReferenceCountedByteBuf> AIF_UPDATER =
-            AtomicIntegerFieldUpdater.newUpdater(AbstractReferenceCountedByteBuf.class, "refCnt");
+            AtomicIntegerFieldUpdater.newUpdater(AbstractReferenceCountedByteBuf.class, "refCnt");  //原子更新器
 
     private static final ReferenceCountUpdater<AbstractReferenceCountedByteBuf> updater =
             new ReferenceCountUpdater<AbstractReferenceCountedByteBuf>() {
@@ -53,7 +53,7 @@ public abstract class AbstractReferenceCountedByteBuf extends AbstractByteBuf {
     boolean isAccessible() {
         // Try to do non-volatile read for performance as the ensureAccessible() is racy anyway and only provide
         // a best-effort guard.
-        return updater.isLiveNonVolatile(this);
+        return updater.isLiveNonVolatile(this); //是否还能用，释放了就不能用了
     }
 
     @Override
@@ -72,14 +72,16 @@ public abstract class AbstractReferenceCountedByteBuf extends AbstractByteBuf {
      * An unsafe operation intended for use by a subclass that resets the reference count of the buffer to 1
      */
     protected final void resetRefCnt() {
-        updater.resetRefCnt(this);
+        updater.resetRefCnt(this);  //获取真实引用计数
     }
 
+    //真实计数+1
     @Override
     public ByteBuf retain() {
         return updater.retain(this);
     }
 
+    //真实计数+increment
     @Override
     public ByteBuf retain(int increment) {
         return updater.retain(this, increment);
@@ -95,11 +97,13 @@ public abstract class AbstractReferenceCountedByteBuf extends AbstractByteBuf {
         return this;
     }
 
+    //外部可以调用的尝试释放资源，内部是用引用更新器来判断的
     @Override
     public boolean release() {
         return handleRelease(updater.release(this));
     }
 
+    //真正返回才去释放
     @Override
     public boolean release(int decrement) {
         return handleRelease(updater.release(this, decrement));
@@ -112,7 +116,7 @@ public abstract class AbstractReferenceCountedByteBuf extends AbstractByteBuf {
         return result;
     }
 
-    /**
+    /** 一旦真实计数为0就释放资源
      * Called once {@link #refCnt()} is equals 0.
      */
     protected abstract void deallocate();

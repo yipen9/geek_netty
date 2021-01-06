@@ -32,6 +32,7 @@ import static io.netty.util.internal.ObjectUtil.checkNotNull;
 
 /**
  * Big endian Java heap buffer implementation. It is recommended to use
+ * 大端
  * {@link UnpooledByteBufAllocator#heapBuffer(int, int)}, {@link Unpooled#buffer(int)} and
  * {@link Unpooled#wrappedBuffer(byte[])} instead of calling the constructor explicitly.
  */
@@ -83,7 +84,7 @@ public class UnpooledHeapByteBuf extends AbstractReferenceCountedByteBuf {
         setArray(initialArray);
         setIndex(0, initialArray.length);
     }
-
+    //申请字节数组空间
     protected byte[] allocateArray(int initialCapacity) {
         return new byte[initialCapacity];
     }
@@ -103,6 +104,37 @@ public class UnpooledHeapByteBuf extends AbstractReferenceCountedByteBuf {
     }
 
     @Override
+    //默认是大端
+    /**
+     * 小端字节序和大端字节序表示存储的字节顺序有区别
+     * 小端字节序：低字节存于内存低地址；高字节存于内存高地址;
+     * long型数据0x12345678
+     * 在小端系统中，
+     * 地址 	数据
+     * 0x00000100 	0x78
+     * 0x00000101 	0x56
+     * 0x00000102 	0x34
+     * 0x00000103 	0x12
+     *
+     * 内存的地址是由低到高的顺序；而数据的字节也是由低到高的
+     *
+     * 大端字节序：高字节存于内存低地址；低字节存于内存高地址;
+     * long型数据0x12345678
+     * 在大端系统中，
+     * 地址 	数据
+     * 0x00000100 	0x12
+     * 0x00000101 	0x34
+     * 0x00000102 	0x56
+     * 0x00000103 	0x78
+     *
+     * 内存的地址是由低到高的顺序；而数据的字节却是由高到低的
+     *
+     * UDP/TCP/IP协议规定:把接收到的第一个字节当作高位字节看待,
+     * 这就要求发送端发送的第一个字节是高位字节;而在发送端发送数据时,
+     * 发送的第一个字节是该数值在内存中的起始地址处对应的那个字节,
+     * 也就是说,该数值在内存中的起始地址处对应的那个字节就是要发送的第一个高位字节(即:高位字节存放在低地址处);
+     * 由此可见,多字节数值在发送之前,在内存中因该是以大端法存放的;
+     */
     public ByteOrder order() {
         return ByteOrder.BIG_ENDIAN;
     }
@@ -117,6 +149,7 @@ public class UnpooledHeapByteBuf extends AbstractReferenceCountedByteBuf {
         return array.length;
     }
 
+    //扩容的话可能会做数组的拷贝。
     @Override
     public ByteBuf capacity(int newCapacity) {
         checkNewCapacity(newCapacity);
@@ -413,7 +446,7 @@ public class UnpooledHeapByteBuf extends AbstractReferenceCountedByteBuf {
         ensureAccessible();
         return _getLongLE(index);
     }
-
+    //LE结尾的是小端
     @Override
     protected long _getLongLE(int index) {
         return HeapByteBufUtil.getLongLE(array, index);
@@ -532,7 +565,7 @@ public class UnpooledHeapByteBuf extends AbstractReferenceCountedByteBuf {
         checkIndex(index, length);
         return alloc().heapBuffer(length, maxCapacity()).writeBytes(array, index, length);
     }
-
+    //这个就是将数据包装成ByteBuffer。
     private ByteBuffer internalNioBuffer() {
         ByteBuffer tmpNioBuf = this.tmpNioBuf;
         if (tmpNioBuf == null) {

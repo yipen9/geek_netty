@@ -33,6 +33,7 @@ import static java.lang.Math.min;
 
 /**
  * Light-weight object pool based on a thread-local stack.
+ * 基于thread-local的栈实现的轻量级的对象池
  *
  * @param <T> the type of the pooled object
  */
@@ -201,13 +202,14 @@ public abstract class Recycler<T> {
         void recycle(T object);
     }
 
+    //对象的包装类，在Recycler中缓存的对象都会包装成DefaultHandle类。
     static final class DefaultHandle<T> implements Handle<T> {
         private int lastRecycledId;
         private int recycleId;
 
         boolean hasBeenRecycled;
 
-        private Stack<?> stack;
+        private Stack<?> stack; //存储本线程回收的对象
         private Object value;
 
         DefaultHandle(Stack<?> stack) {
@@ -215,7 +217,7 @@ public abstract class Recycler<T> {
         }
 
         @Override
-        public void recycle(Object object) {
+        public void recycle(Object object) {    //回收一个对象，T为对象泛型；
             if (object != value) {
                 throw new IllegalArgumentException("object does not belong to handle");
             }
@@ -239,11 +241,15 @@ public abstract class Recycler<T> {
 
     // a queue that makes only moderate guarantees about visibility: items are seen in the correct order,
     // but we aren't absolutely guaranteed to ever see anything at all, thereby keeping the queue cheap to maintain
+    //存储其它线程回收到本线程stack的对象 ，当某个线程从Stack中获取不到对象时会从WeakOrderQueue中获取对象。
+    // 每个线程的Stack拥有1个WeakOrderQueue链表，链表每个节点对应1个其它线程的WeakOrderQueue，
+    // 其它线程回收到该Stack的对象就存储在这个WeakOrderQueue里。
     private static final class WeakOrderQueue {
 
         static final WeakOrderQueue DUMMY = new WeakOrderQueue();
 
         // Let Link extend AtomicInteger for intrinsics. The Link itself will be used as writerIndex.
+        // WeakOrderQueue中包含1个Link链表，回收对象存储在链表某个Link节点里，当Link节点存储的回收对象满了时会新建1个Link放在Link链表尾。
         @SuppressWarnings("serial")
         static final class Link extends AtomicInteger {
             private final DefaultHandle<?>[] elements = new DefaultHandle[LINK_CAPACITY];

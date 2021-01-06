@@ -138,6 +138,7 @@ public final class UnpooledByteBufAllocator extends AbstractByteBufAllocator imp
     }
 
     private static final class InstrumentedUnpooledUnsafeHeapByteBuf extends UnpooledUnsafeHeapByteBuf {
+        //传入的alloc，是UnpooledByteBufAllocator自身
         InstrumentedUnpooledUnsafeHeapByteBuf(UnpooledByteBufAllocator alloc, int initialCapacity, int maxCapacity) {
             super(alloc, initialCapacity, maxCapacity);
         }
@@ -156,7 +157,7 @@ public final class UnpooledByteBufAllocator extends AbstractByteBufAllocator imp
             ((UnpooledByteBufAllocator) alloc()).decrementHeap(length);
         }
     }
-
+    //仪表化的无池化的堆缓冲区，其实就是记录了申请和释放的时候记录字节数
     private static final class InstrumentedUnpooledHeapByteBuf extends UnpooledHeapByteBuf {
         InstrumentedUnpooledHeapByteBuf(UnpooledByteBufAllocator alloc, int initialCapacity, int maxCapacity) {
             super(alloc, initialCapacity, maxCapacity);
@@ -168,7 +169,7 @@ public final class UnpooledByteBufAllocator extends AbstractByteBufAllocator imp
             ((UnpooledByteBufAllocator) alloc()).incrementHeap(bytes.length);
             return bytes;
         }
-
+        //实现了释放内部字节数组
         @Override
         protected void freeArray(byte[] array) {
             int length = array.length;

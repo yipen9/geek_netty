@@ -68,7 +68,7 @@ final class HeapByteBufUtil {
                 ((long) memory[index + 6] & 0xff) <<  8 |
                 (long) memory[index + 7] & 0xff;
     }
-
+    //& 0xff 只是为了取得低八位
     static long getLongLE(byte[] memory, int index) {
         return  (long) memory[index]      & 0xff        |
                 ((long) memory[index + 1] & 0xff) <<  8 |
@@ -143,4 +143,13 @@ final class HeapByteBufUtil {
     }
 
     private HeapByteBufUtil() { }
+
+    public static void main(String[] args) {
+        int a = 1;
+        ByteBuf byteBuf = Unpooled.buffer(4);
+        byteBuf.writeInt(a);
+        int c = HeapByteBufUtil.getInt(byteBuf.array(), 0);
+        System.out.println(c);
+    }
+
 }

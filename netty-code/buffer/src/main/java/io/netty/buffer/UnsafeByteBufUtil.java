@@ -373,8 +373,8 @@ final class UnsafeByteBufUtil {
     }
 
     static void setInt(byte[] array, int index, int value) {
-        if (UNALIGNED) {
-            PlatformDependent.putInt(array, index, BIG_ENDIAN_NATIVE_ORDER ? value : Integer.reverseBytes(value));
+        if (UNALIGNED) {    //window存储是小端
+            PlatformDependent.putInt(array, index, BIG_ENDIAN_NATIVE_ORDER ? value : Integer.reverseBytes(value));//二进制按byte反转
         } else {
             PlatformDependent.putByte(array, index, (byte) (value >>> 24));
             PlatformDependent.putByte(array, index + 1, (byte) (value >>> 16));

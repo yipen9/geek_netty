@@ -112,6 +112,7 @@ public abstract class ReferenceCountUpdater<T extends ReferenceCounted> {
 
     public final T retain(T instance, int increment) {
         // all changes to the raw count are 2x the "real" change - overflow is OK
+        //所有的增加都是真实值的2倍
         int rawIncrement = checkPositive(increment, "increment") << 1;
         return retain0(instance, increment, rawIncrement);
     }

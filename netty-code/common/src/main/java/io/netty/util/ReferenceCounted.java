@@ -27,6 +27,10 @@ package io.netty.util;
  * If an object that implements {@link ReferenceCounted} is a container of other objects that implement
  * {@link ReferenceCounted}, the contained objects will also be released via {@link #release()} when the container's
  * reference count becomes 0.
+ * 这个就是为了更好的管理好内存用的一种比较简单的方法，简单的原理就是如果一个对象有引用，那就计数器+1，
+ * 如果释放了引用，那就计数器-1，如果发现计数器是0了，那就执行回收。一般的堆内的内存可以由GC来回收，
+ * 但是如果是堆外的话，就要自己手动来释放啦，不然会造成内存泄露的。touch方法就是辅助调试用的，
+ * 另外就是引用计数增加retain和减少release。
  * </p>
  */
 public interface ReferenceCounted {
