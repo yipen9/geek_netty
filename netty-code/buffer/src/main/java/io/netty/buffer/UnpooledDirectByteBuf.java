@@ -113,9 +113,12 @@ public class UnpooledDirectByteBuf extends AbstractReferenceCountedByteBuf {
 
     /**
      * Free a direct {@link ByteBuffer}
+     * {@link io.netty.util.internal.Cleaner#freeDirectBuffer(ByteBuffer)}
+     * 根据不同的java版本，会有不同的实现，分为CleanerJava9和CleanerJava6两种
+     * 也就是9以及以上的版本用9，其他的用6。
      */
     protected void freeDirect(ByteBuffer buffer) {
-        PlatformDependent.freeDirectBuffer(buffer);
+        PlatformDependent.freeDirectBuffer(buffer);  //最后调用DirectByteBuffer的Cleaner.clean
     }
 
     void setByteBuffer(ByteBuffer buffer, boolean tryFree) {

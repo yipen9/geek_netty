@@ -38,18 +38,21 @@ final class CleanerJava6 implements Cleaner {
 
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(CleanerJava6.class);
 
+    /**
+     *
+     */
     static {
         long fieldOffset;
         Method clean;
         Field cleanerField;
         Throwable error = null;
-        final ByteBuffer direct = ByteBuffer.allocateDirect(1);
+        final ByteBuffer direct = ByteBuffer.allocateDirect(1); //他会先申请一个容量为1的直接缓冲区
         try {
             Object mayBeCleanerField = AccessController.doPrivileged(new PrivilegedAction<Object>() {
                 @Override
                 public Object run() {
                     try {
-                        Field cleanerField =  direct.getClass().getDeclaredField("cleaner");
+                        Field cleanerField =  direct.getClass().getDeclaredField("cleaner");    //再DirectByteBuffer获取cleaner对象以及clean方法
                         if (!PlatformDependent.hasUnsafe()) {
                             // We need to make it accessible if we do not use Unsafe as we will access it via
                             // reflection.
@@ -71,7 +74,7 @@ final class CleanerJava6 implements Cleaner {
 
             // If we have sun.misc.Unsafe we will use it as its faster then using reflection,
             // otherwise let us try reflection as last resort.
-            if (PlatformDependent.hasUnsafe()) {
+            if (PlatformDependent.hasUnsafe()) {    //然当然如果支持unsafe的话还可以获得cleaner属性的偏移地址fieldOffset 。
                 fieldOffset = PlatformDependent0.objectFieldOffset(cleanerField);
                 cleaner = PlatformDependent0.getObject(direct, fieldOffset);
             } else {
@@ -79,7 +82,7 @@ final class CleanerJava6 implements Cleaner {
                 cleaner = cleanerField.get(direct);
             }
             clean = cleaner.getClass().getDeclaredMethod("clean");
-            clean.invoke(cleaner);
+            clean.invoke(cleaner);      //调用一次clean方法,释放掉刚才的内存
         } catch (Throwable t) {
             // We don't have ByteBuffer.cleaner().
             fieldOffset = -1;
@@ -95,7 +98,7 @@ final class CleanerJava6 implements Cleaner {
         }
         CLEANER_FIELD = cleanerField;
         CLEANER_FIELD_OFFSET = fieldOffset;
-        CLEAN_METHOD = clean;
+        CLEAN_METHOD = clean;   //初始化
     }
 
     static boolean isSupported() {

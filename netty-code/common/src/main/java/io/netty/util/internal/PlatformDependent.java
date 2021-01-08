@@ -93,7 +93,7 @@ public final class PlatformDependent {
 
     private static final Throwable UNSAFE_UNAVAILABILITY_CAUSE = unsafeUnavailabilityCause0();
     private static final boolean DIRECT_BUFFER_PREFERRED;
-    private static final long MAX_DIRECT_MEMORY = maxDirectMemory0();
+    private static final long MAX_DIRECT_MEMORY = maxDirectMemory0();   //允许最大的堆外内存
 
     private static final int MPSC_CHUNK_SIZE =  1024;
     private static final int MIN_MAX_MPSC_CAPACITY =  MPSC_CHUNK_SIZE * 2;
@@ -170,7 +170,7 @@ public final class PlatformDependent {
                 DIRECT_MEMORY_COUNTER = new AtomicLong();
             }
         }
-        logger.debug("-Dio.netty.maxDirectMemory: {} bytes", maxDirectMemory);
+        logger.debug("-Dio.netty.maxDirectMemory: {} bytes", maxDirectMemory);  //是否指定最大堆外内存
         DIRECT_MEMORY_LIMIT = maxDirectMemory >= 1 ? maxDirectMemory : MAX_DIRECT_MEMORY;
 
         int tryAllocateUninitializedArray =
@@ -674,6 +674,7 @@ public final class PlatformDependent {
     /**
      * Allocate a new {@link ByteBuffer} with the given {@code capacity}. {@link ByteBuffer}s allocated with
      * this method <strong>MUST</strong> be deallocated via {@link #freeDirectNoCleaner(ByteBuffer)}.
+     * 分配direct内存没有cleaner
      */
     public static ByteBuffer allocateDirectNoCleaner(int capacity) {
         assert USE_DIRECT_BUFFER_NO_CLEANER;
@@ -718,6 +719,7 @@ public final class PlatformDependent {
         decrementMemoryCounter(capacity);
     }
 
+    //如果使用了堆外内存，Netty会进行统计，如果超过最大限制会抛出异常。
     private static void incrementMemoryCounter(int capacity) {
         if (DIRECT_MEMORY_COUNTER != null) {
             long newUsedMemory = DIRECT_MEMORY_COUNTER.addAndGet(capacity);

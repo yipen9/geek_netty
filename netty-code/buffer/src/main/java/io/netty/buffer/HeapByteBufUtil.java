@@ -146,10 +146,11 @@ final class HeapByteBufUtil {
 
     public static void main(String[] args) {
         int a = 1;
-        ByteBuf byteBuf = Unpooled.buffer(4);
+        UnpooledByteBufAllocator allocator = UnpooledByteBufAllocator.DEFAULT;
+        ByteBuf byteBuf = Unpooled.directBuffer(4);
         byteBuf.writeInt(a);
-        int c = HeapByteBufUtil.getInt(byteBuf.array(), 0);
-        System.out.println(c);
+//        int c = HeapByteBufUtil.getInt(byteBuf.readBytes(), 0);
+//        System.out.println(c);
     }
 
 }

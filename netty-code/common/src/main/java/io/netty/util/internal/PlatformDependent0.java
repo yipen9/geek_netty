@@ -470,7 +470,7 @@ final class PlatformDependent0 {
         ObjectUtil.checkPositiveOrZero(capacity, "capacity");
 
         try {
-            return (ByteBuffer) DIRECT_BUFFER_CONSTRUCTOR.newInstance(address, capacity);
+            return (ByteBuffer) DIRECT_BUFFER_CONSTRUCTOR.newInstance(address, capacity);   //DirectByteBuffer
         } catch (Throwable cause) {
             // Not expected to ever throw!
             if (cause instanceof Error) {
