@@ -231,6 +231,15 @@ public class LengthFieldBasedFrameDecoder extends ByteToMessageDecoder {
      *        the compensation value to add to the value of the length field
      * @param initialBytesToStrip
      *        the number of first bytes to strip out from the decoded frame
+     *
+     *      maxFrameLength  发送的数据包最大长度
+     *      lengthFieldOffset  长度域偏移量，指的是长度域位于整个数据包字节数组中的下标
+     *      lengthFieldLength - 长度域的自己的字节数长度。
+     *      lengthAdjustment – 长度域的偏移量矫正。 如果长度域的值，除了包含有效数据域的长度外，
+     *      还包含了其他域（如长度域自身）长度，那么，就需要进行矫正。(lengthFieldLength如果不是表示正在有效数据的长度，需要矫正)
+     *      矫正的值为：包长 - 长度域的值 – 长度域偏移 – 长度域长。
+     *      initialBytesToStrip – 丢弃的起始字节数。丢弃处于有效数据前面的字节数量。
+     *
      */
     public LengthFieldBasedFrameDecoder(
             int maxFrameLength,
@@ -324,7 +333,7 @@ public class LengthFieldBasedFrameDecoder extends ByteToMessageDecoder {
         this.lengthFieldOffset = lengthFieldOffset;
         this.lengthFieldLength = lengthFieldLength;
         this.lengthAdjustment = lengthAdjustment;
-        lengthFieldEndOffset = lengthFieldOffset + lengthFieldLength;
+        lengthFieldEndOffset = lengthFieldOffset + lengthFieldLength;   //lengthFieldEndOffset表示，字段长度开始+字段长度占用的字节数
         this.initialBytesToStrip = initialBytesToStrip;
         this.failFast = failFast;
     }
@@ -394,24 +403,34 @@ public class LengthFieldBasedFrameDecoder extends ByteToMessageDecoder {
      * @param   in              the {@link ByteBuf} from which to read data
      * @return  frame           the {@link ByteBuf} which represent the frame or {@code null} if no frame could
      *                          be created.
+     *
+     *         maxFrameLength,lengthFieldOffset,lengthFieldLength,lengthAdjustment,initialBytesToStrip
+     *         new LengthFieldBasedFrameDecoder(1024,2,4,-4,6);
+     *         ByteBuf buf = Unpooled.buffer();
+     *         String s = "peng.yi" + " is me ,呵呵";
+     *         byte[] bytes = s.getBytes("UTF-8");
+     *         buf.writeChar(100); //占用2个字节
+     *         buf.writeInt(bytes.length + 4); //占用4个字节
+     *         buf.writeBytes(bytes);
+     *         System.out.println(Arrays.toString(buf.array()));
      */
     protected Object decode(ChannelHandlerContext ctx, ByteBuf in) throws Exception {
-        if (discardingTooLongFrame) {
+        if (discardingTooLongFrame) {   //丢弃太长的Frame
             discardingTooLongFrame(in);
         }
 
-        if (in.readableBytes() < lengthFieldEndOffset) {
+        if (in.readableBytes() < lengthFieldEndOffset) {    //可读字节，比Field长度的字节位置还少，则直接返回
             return null;
         }
 
-        int actualLengthFieldOffset = in.readerIndex() + lengthFieldOffset;
+        int actualLengthFieldOffset = in.readerIndex() + lengthFieldOffset; //byteBuf读开始索引+lengthFieldOffset，表示实际的长度的字节占用
         long frameLength = getUnadjustedFrameLength(in, actualLengthFieldOffset, lengthFieldLength, byteOrder);
 
         if (frameLength < 0) {
             failOnNegativeLengthField(in, frameLength, lengthFieldEndOffset);
         }
 
-        frameLength += lengthAdjustment + lengthFieldEndOffset;
+        frameLength += lengthAdjustment + lengthFieldEndOffset; //lengthAdjustment的校正值+长度开始的offset+长度的length
 
         if (frameLength < lengthFieldEndOffset) {
             failOnFrameLengthLessThanLengthFieldEndOffset(in, frameLength, lengthFieldEndOffset);
@@ -424,18 +443,18 @@ public class LengthFieldBasedFrameDecoder extends ByteToMessageDecoder {
 
         // never overflows because it's less than maxFrameLength
         int frameLengthInt = (int) frameLength;
-        if (in.readableBytes() < frameLengthInt) {
+        if (in.readableBytes() < frameLengthInt) {  //可读的比frameLengthInt小，直接返回，不解码
             return null;
         }
 
-        if (initialBytesToStrip > frameLengthInt) {
+        if (initialBytesToStrip > frameLengthInt) { //初始化，跳过的字节数大于frameLengthInt
             failOnFrameLengthLessThanInitialBytesToStrip(in, frameLength, initialBytesToStrip);
         }
-        in.skipBytes(initialBytesToStrip);
+        in.skipBytes(initialBytesToStrip);  //跳过设置的字节数
 
         // extract frame
         int readerIndex = in.readerIndex();
-        int actualFrameLength = frameLengthInt - initialBytesToStrip;
+        int actualFrameLength = frameLengthInt - initialBytesToStrip;   //实际的FrameLength长度
         ByteBuf frame = extractFrame(ctx, in, readerIndex, actualFrameLength);
         in.readerIndex(readerIndex + actualFrameLength);
         return frame;
@@ -448,6 +467,7 @@ public class LengthFieldBasedFrameDecoder extends ByteToMessageDecoder {
      * buffer (e.g. {@code readerIndex}, {@code writerIndex}, and the content of the buffer.)
      *
      * @throws DecoderException if failed to decode the specified region
+     * 根据byteOrder和offset，length获取frame的长度，不同的长度使用不同的类型
      */
     protected long getUnadjustedFrameLength(ByteBuf buf, int offset, int length, ByteOrder order) {
         buf = buf.order(order);

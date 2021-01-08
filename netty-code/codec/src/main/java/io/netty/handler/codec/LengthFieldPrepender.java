@@ -59,7 +59,7 @@ public class LengthFieldPrepender extends MessageToMessageEncoder<ByteBuf> {
     //LITTLE_ENDIAN:最低地址存放最低有效字节 。
     private final ByteOrder byteOrder;
     private final int lengthFieldLength;
-    //长度计算包含长度字段本身
+    //长度计算是否包含长度字段本身
     private final boolean lengthIncludesLengthFieldLength;
     private final int lengthAdjustment;
 
@@ -163,14 +163,14 @@ public class LengthFieldPrepender extends MessageToMessageEncoder<ByteBuf> {
 
     @Override
     protected void encode(ChannelHandlerContext ctx, ByteBuf msg, List<Object> out) throws Exception {
-        int length = msg.readableBytes() + lengthAdjustment;
-        if (lengthIncludesLengthFieldLength) {
-            length += lengthFieldLength;
+        int length = msg.readableBytes() + lengthAdjustment;    //msg可读的+lengthAdjustment
+        if (lengthIncludesLengthFieldLength) {  //如果长度包含lengthFieldLength
+            length += lengthFieldLength;        //写入的frame长度
         }
 
         checkPositiveOrZero(length, "length");
-
-        switch (lengthFieldLength) {
+        //根据lengthFieldLength长度，申请对应的ctx.alloc().buffer，写入length
+        switch (lengthFieldLength) {    //
         case 1:
             if (length >= 256) {
                 throw new IllegalArgumentException(
