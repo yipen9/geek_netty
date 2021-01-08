@@ -415,6 +415,7 @@ public class LengthFieldBasedFrameDecoder extends ByteToMessageDecoder {
      *         System.out.println(Arrays.toString(buf.array()));
      */
     protected Object decode(ChannelHandlerContext ctx, ByteBuf in) throws Exception {
+        //in就是父类的累加缓冲区
         if (discardingTooLongFrame) {   //丢弃太长的Frame
             discardingTooLongFrame(in);
         }
