@@ -5,6 +5,6 @@ import io.netty.buffer.ByteBufAllocator;
 
 public class ByteBufAllocatorDemo {
     public static void main(String[] args) {
-        ByteBuf buf = ByteBufAllocator.DEFAULT.heapBuffer(5);
+        ByteBuf buf = ByteBufAllocator.DEFAULT.heapBuffer(1025*8);
     }
 }

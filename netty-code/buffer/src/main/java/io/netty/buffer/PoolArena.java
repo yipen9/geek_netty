@@ -231,6 +231,9 @@ abstract class PoolArena<T> implements PoolArenaMetric {
                     return;
                 }
             }
+            /**
+             * 如果此时子页PoolSubpage只有头结点的情况，即s == head，就会进行allocateNormal，负责申请内存
+             */
             synchronized (this) {//多线程共享的区域需要同步
                 allocateNormal(buf, reqCapacity, normCapacity);
             }
@@ -254,6 +257,7 @@ abstract class PoolArena<T> implements PoolArenaMetric {
     }
 
     // Method must be called inside synchronized(this) { ... } block
+    //首先会根据顺序q050，q025，q000，qInit，q075的顺序进行内存申请
     private void allocateNormal(PooledByteBuf<T> buf, int reqCapacity, int normCapacity) {
         if (q050.allocate(buf, reqCapacity, normCapacity) || q025.allocate(buf, reqCapacity, normCapacity) ||
             q000.allocate(buf, reqCapacity, normCapacity) || qInit.allocate(buf, reqCapacity, normCapacity) ||
@@ -261,11 +265,11 @@ abstract class PoolArena<T> implements PoolArenaMetric {
             return;
         }
 
-        // Add a new chunk.
+        // Add a new chunk. 不成功就增加一个块
         PoolChunk<T> c = newChunk(pageSize, maxOrder, pageShifts, chunkSize);
-        boolean success = c.allocate(buf, reqCapacity, normCapacity);
+        boolean success = c.allocate(buf, reqCapacity, normCapacity);   //分配空间
         assert success;
-        qInit.add(c);
+        qInit.add(c);   //加入到初始块列表里
     }
 
     private void incTinySmallAllocation(boolean tiny) {
@@ -356,11 +360,11 @@ abstract class PoolArena<T> implements PoolArenaMetric {
 
     int normalizeCapacity(int reqCapacity) {
         checkPositiveOrZero(reqCapacity, "reqCapacity");
-
+        //大于等于块大小就判断是否要对齐 ，返回处理后的大小
         if (reqCapacity >= chunkSize) {
-            return directMemoryCacheAlignment == 0 ? reqCapacity : alignCapacity(reqCapacity);
+            return directMemoryCacheAlignment == 0 ? reqCapacity : alignCapacity(reqCapacity);  //对齐前面已经说过啦
         }
-
+        //不是Tiny类型的 向上取到大于等于申请容量的规范类型 512 1k 2k 4k 这4个类型
         if (!isTiny(reqCapacity)) { // >= 512
             // Doubled
 
@@ -386,10 +390,11 @@ abstract class PoolArena<T> implements PoolArenaMetric {
         }
 
         // Quantum-spaced
-        if ((reqCapacity & 15) == 0) {
+        // Quantum-spaced Tiny类型又是16的倍数
+        if ((reqCapacity & 15) == 0) {      //位运算，取出余数，为0就表示是16的倍数
             return reqCapacity;
         }
-
+        //非16倍数的 向上取成16的倍数 比如要100，(reqCapacity & ~15)先减去余数4，然后+16，即变成了112,16的7倍
         return (reqCapacity & ~15) + 16;
     }
 

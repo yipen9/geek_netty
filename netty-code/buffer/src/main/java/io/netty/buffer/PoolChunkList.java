@@ -77,17 +77,17 @@ final class PoolChunkList<T> implements PoolChunkListMetric {
     }
 
     boolean allocate(PooledByteBuf<T> buf, int reqCapacity, int normCapacity) {
-        if (normCapacity > maxCapacity) {
+        if (normCapacity > maxCapacity) {//超过了最大分配容量
             // Either this PoolChunkList is empty or the requested capacity is larger then the capacity which can
             // be handled by the PoolChunks that are contained in this PoolChunkList.
             return false;
         }
-
+        //遍历里面的块，块存在就尝试分配，块用满了就往下一个放
         for (PoolChunk<T> cur = head; cur != null; cur = cur.next) {
             if (cur.allocate(buf, reqCapacity, normCapacity)) {
-                if (cur.usage() >= maxUsage) {
-                    remove(cur);
-                    nextList.add(cur);
+                if (cur.usage() >= maxUsage) {  //使用率已经大于等于最大的了
+                    remove(cur);    //从当前块列表q0，q25中移除
+                    nextList.add(cur);  //PoolChunk放到下一个块列表里
                 }
                 return true;
             }

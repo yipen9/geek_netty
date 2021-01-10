@@ -48,6 +48,7 @@ import static java.lang.Math.min;
  * <li>{@link #getUserDefinedWritability(int)} and {@link #setUserDefinedWritability(int, boolean)}</li>
  * </ul>
  * </p>
+ * 他是一个通道的出站缓冲区，所有要写的数据都会先存在这里，等到要刷新的时候才会真的写出去。
  */
 public final class ChannelOutboundBuffer {
     // Assuming a 64-bit JVM:

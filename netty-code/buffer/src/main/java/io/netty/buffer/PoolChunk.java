@@ -107,42 +107,42 @@ final class PoolChunk<T> implements PoolChunkMetric {
 
     private static final int INTEGER_SIZE_MINUS_ONE = Integer.SIZE - 1;
 
-    final PoolArena<T> arena;
-    final T memory;
-    final boolean unpooled;
-    final int offset;
-    private final byte[] memoryMap;
-    private final byte[] depthMap;
-    private final PoolSubpage<T>[] subpages;
+    final PoolArena<T> arena;   //所在的arena区域
+    final T memory; //真正分配的内存，如果是堆内的话就是字节数组，否则就是直接缓冲区DirectByteBuffer，这个是真正操作分配的内存，其他的一些都是逻辑上分配内存
+    final boolean unpooled; //是否要进行池化
+    final int offset;   //缓存行偏移，默认0
+    private final byte[] memoryMap;  //内存映射深度字节数组
+    private final byte[] depthMap;  //深度映射字节数组，这个数组不变，作为对照计算的
+    private final PoolSubpage<T>[] subpages;    //子页数组，也是满二叉树的叶子节点数组
     /** Used to determine if the requested capacity is equal to or greater than pageSize. */
-    private final int subpageOverflowMask;
-    private final int pageSize;
-    private final int pageShifts;
-    private final int maxOrder;
-    private final int chunkSize;
-    private final int log2ChunkSize;
-    private final int maxSubpageAllocs;
+    private final int subpageOverflowMask;  //跟前面讲过的一样，这个用来判断是否小于页大小
+    private final int pageSize; //页大小 8k
+    private final int pageShifts;   //默认13
+    private final int maxOrder; //最大深度索引，默认11 从0开始的
+    private final int chunkSize;    //块大小，默认16m
+    private final int log2ChunkSize;    //ChunkSize取log2的值 24
+    private final int maxSubpageAllocs; //最大子叶数，跟最大深度有关，最大深度上的叶子结点个数就是子页数
     /** Used to mark memory as unusable */
-    private final byte unusable;
+    private final byte unusable;    //是否无法使用，最大深度索引+1，默认是12，表示不可用
 
     // Use as cache for ByteBuffer created from the memory. These are just duplicates and so are only a container
     // around the memory itself. These are often needed for operations within the Pooled*ByteBuf and so
     // may produce extra GC, which can be greatly reduced by caching the duplicates.
     //
     // This may be null if the PoolChunk is unpooled as pooling the ByteBuffer instances does not make any sense here.
-    private final Deque<ByteBuffer> cachedNioBuffers;
+    private final Deque<ByteBuffer> cachedNioBuffers;   //池化用
 
-    private int freeBytes;
+    private int freeBytes;  //可分配的字节数，默认是16m
 
-    PoolChunkList<T> parent;
-    PoolChunk<T> prev;
-    PoolChunk<T> next;
+    PoolChunkList<T> parent;    //所在块列表
+    PoolChunk<T> prev;  //前驱
+    PoolChunk<T> next;  //后继
 
     // TODO: Test if adding padding helps under contention
     //private long pad0, pad1, pad2, pad3, pad4, pad5, pad6, pad7;
 
     PoolChunk(PoolArena<T> arena, T memory, int pageSize, int maxOrder, int pageShifts, int chunkSize, int offset) {
-        unpooled = false;
+        unpooled = false;   //池化
         this.arena = arena;
         this.memory = memory;
         this.pageSize = pageSize;
@@ -150,30 +150,47 @@ final class PoolChunk<T> implements PoolChunkMetric {
         this.maxOrder = maxOrder;
         this.chunkSize = chunkSize;
         this.offset = offset;
-        unusable = (byte) (maxOrder + 1);
+        unusable = (byte) (maxOrder + 1);   //最大深度索引+1，表示不可用 默认是11+1=12
         log2ChunkSize = log2(chunkSize);
         subpageOverflowMask = ~(pageSize - 1);
         freeBytes = chunkSize;
 
+        //最大深度应该小于30
         assert maxOrder < 30 : "maxOrder should be < 30, but is: " + maxOrder;
+        //可分配子页的个数 2的11次方=2048，是最大深度索引为maxOrder的二叉树的个数，也就是满二叉树的叶子节点
         maxSubpageAllocs = 1 << maxOrder;
 
         // Generate the memory map.
-        memoryMap = new byte[maxSubpageAllocs << 1];
+        /**
+         * memoryMap 和depthMap 两个数组，其实对应的是一棵满二叉树，把块大小16m，分成了4095个节点，
+         * 最深层的叶子结点的尺寸就是一个页大小8k，因此，最大深度索引maxOrder=11的地方，
+         * 根据满二叉树的特征，有2的11次方个节点，即2048。而16m除以8k也刚好是2048，
+         * 刚好对应上，至于上面的父节点，都是作为管理的
+         *满二叉树的数组 4095个 总共有12层 根据等比公式 结果为4095个
+         * */
+
+        memoryMap = new byte[maxSubpageAllocs << 1];    //叶子结点的两倍
+        /**
+         * 对于depthMap而言，该值就代表该节点所处的树的层数。
+         * 例如:depthMap[1] == 1，因为它是根节点，而depthMap[2] = depthMap[3] = 2，
+         * 表示这两个节点均在第二层。由于树一旦确定后，结构就不在发生改变，
+         * 因此depthMap在初始化后，各元素的值也就不发生变化了。
+         */
         depthMap = new byte[memoryMap.length];
         int memoryMapIndex = 1;
         for (int d = 0; d <= maxOrder; ++ d) { // move down the tree one level at a time
-            int depth = 1 << d;
+            int depth = 1 << d;     //长度2^d
             for (int p = 0; p < depth; ++ p) {
-                // in each level traverse left to right and set value to the depth of subtree
-                memoryMap[memoryMapIndex] = (byte) d;
+                // in each level traverse left to right and set value to the depth of subtre
+                // 从左到右，从上到下，进行编号，从1开始，并且设置深度索引d e
+                memoryMap[memoryMapIndex] = (byte) d;       //每个节点所能分配的内存大小就是该层最初始的状态(即memoryMap的初始状态和depthMap的一致的)
                 depthMap[memoryMapIndex] = (byte) d;
                 memoryMapIndex ++;
             }
         }
-
+        //分配子页个数
         subpages = newSubpageArray(maxSubpageAllocs);
-        cachedNioBuffers = new ArrayDeque<ByteBuffer>(8);
+        cachedNioBuffers = new ArrayDeque<ByteBuffer>(8);   //创建性能比较好的队列
     }
 
     /** Creates a special chunk that is not pooled. */
@@ -223,13 +240,19 @@ final class PoolChunk<T> implements PoolChunkMetric {
     }
 
     boolean allocate(PooledByteBuf<T> buf, int reqCapacity, int normCapacity) {
-        final long handle;
-        if ((normCapacity & subpageOverflowMask) != 0) { // >= pageSize
-            handle =  allocateRun(normCapacity);
-        } else {
-            handle = allocateSubpage(normCapacity);
-        }
 
+        final long handle;  //一个唯一的值，根据叶子节点id，位图索引生成
+        if ((normCapacity & subpageOverflowMask) != 0) { // >= pageSize如果大于一页的量
+            handle =  allocateRun(normCapacity);    //run来分配
+        } else {
+            handle = allocateSubpage(normCapacity); //子页来分 <pageSize
+        }
+        /**
+         * 之后会返回一个handle 句柄，这个东西是一个64位的标记，
+         * 记载着很多内存地址信息，
+         * 如果是allocateRun返回的就是内存映射索引，
+         * 如果是allocateSubpage返回的就是一个包含内存映射索引和子页信息的值
+         */
         if (handle < 0) {
             return false;
         }
@@ -243,7 +266,9 @@ final class PoolChunk<T> implements PoolChunkMetric {
      * This is triggered only when a successor is allocated and all its predecessors
      * need to update their state
      * The minimal depth at which subtree rooted at id has some free space
-     *
+     *同时要更新父节点，一直到根节点，改变是否可用的状态，
+     * 如果仅仅一个子节点分配了，那就父节点的深度值就改成子节点里最小的那个，
+     * 子节点深度比父节点大1，所以其实也就是深度值+1，如果两个都被用了，那就改成unusable。
      * @param id id
      */
     private void updateParentsAlloc(int id) {
@@ -291,41 +316,52 @@ final class PoolChunk<T> implements PoolChunkMetric {
      * @return index in memoryMap
      */
     private int allocateNode(int d) {
-        int id = 1;
+        int id = 1; //从内存映射索引为1的开始 也就是深度索引为0开始
+        // 用于比较id所在深度索引是否小于d
         int initial = - (1 << d); // has last d bits = 0 and rest all = 1
         byte val = value(id);
-        if (val > d) { // unusable
+        if (val > d) { // unusable 大于此深度索引就不可用了
             return -1;
         }
+        //从头开始深度优先，遍历完所有深度索引小于d的可用的子结点，只有到id的深度索引是d的时候才会结束，
+        // 而且是遍历一次都是深度索引+1，即是深度优先的算法，先找出对应的深度，然后从左到右看是否有内存可分配。
         while (val < d || (id & initial) == 0) { // id & initial == 1 << d for all ids at depth d, for < d it is 0
-            id <<= 1;
-            val = value(id);
-            if (val > d) {
-                id ^= 1;
-                val = value(id);
+            id <<= 1;   //得到下一深度索引的左节点
+            val = value(id);    //获取对应深度索引值
+            if (val > d) {  //如果大于深度索引 即左节点不能用了
+                id ^= 1;    //异或位运算，获取右结点
+                val = value(id);   //再取出对应深度索引值
             }
         }
+        //获取深度索引值，这里的value>=d 下面还要断言，如果是=d才是可以用的，>d即被设置了unusable，表示不可用了
         byte value = value(id);
         assert value == d && (id & initial) == 1 << d : String.format("val = %d, id & initial = %d, d = %d",
                 value, id & initial, d);
-        setValue(id, unusable); // mark as unusable
-        updateParentsAlloc(id);
-        return id;
+        setValue(id, unusable); // mark as unusable 设置id深度索引值，为最大深度索引+1，即不可用了
+        updateParentsAlloc(id); //更新父节点值
+        return id;  //返回内存映射索引
     }
 
     /**
      * Allocate a run of pages (>=1)
-     *
+     * allocateRun大于页大小的分配，即Normal类型
      * @param normCapacity normalized capacity
      * @return index in memoryMap
      */
     private long allocateRun(int normCapacity) {
-        int d = maxOrder - (log2(normCapacity) - pageShifts);
+        //这里的容量都是pageSize及以上的，
+        /**
+         * (log2(normCapacity) - pageShifts)，因为在这里的normCapacity至少是8k，所以取了log2后至少是13，
+         * 如果刚好是13，那么这个结果就是0，d=maxOrder=11。意思就是说定位要了深度索引11，也就是最大深度索引，
+         * 上面是2048个子页，大小也是8k。
+         * 如果是16k呢，那结果就是11-(14-13)=10,深度索引是10。也就是内存映射为1024的地方开始。
+         */
+        int d = maxOrder - (log2(normCapacity) - pageShifts);   // 表示容量是页大小的2的多少倍，log2(normCapacity) - pageShifts
         int id = allocateNode(d);
         if (id < 0) {
             return id;
         }
-        freeBytes -= runLength(id);
+        freeBytes -= runLength(id); //减去分配的大小
         return id;
     }
 
@@ -444,11 +480,13 @@ final class PoolChunk<T> implements PoolChunkMetric {
         return depthMap[id];
     }
 
+    //用这种位运算代替直接取log，提高性能
     private static int log2(int val) {
         // compute the (0-based, with lsb = 0) position of highest set bit i.e, log2
         return INTEGER_SIZE_MINUS_ONE - Integer.numberOfLeadingZeros(val);
     }
 
+    //深度值越小，说明能分配的越多，越大能分配的越少
     private int runLength(int id) {
         // represents the size in #bytes supported by node 'id' in the tree
         return 1 << log2ChunkSize - depth(id);
