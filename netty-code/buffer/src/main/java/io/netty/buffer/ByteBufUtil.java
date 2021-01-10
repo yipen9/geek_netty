@@ -82,7 +82,7 @@ public final class ByteBufUtil {
             alloc = UnpooledByteBufAllocator.DEFAULT;
             logger.debug("-Dio.netty.allocator.type: {}", allocType);
         } else if ("pooled".equals(allocType)) {
-            alloc = PooledByteBufAllocator.DEFAULT;
+            alloc = PooledByteBufAllocator.DEFAULT; //服务器默认是池化的
             logger.debug("-Dio.netty.allocator.type: {}", allocType);
         } else {
             //io.netty.allocator.type设置的不是"unpooled"或者"pooled"，就用池化实现。

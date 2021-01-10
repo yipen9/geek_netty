@@ -31,44 +31,45 @@ import static java.lang.Math.max;
 
 abstract class PoolArena<T> implements PoolArenaMetric {
     static final boolean HAS_UNSAFE = PlatformDependent.hasUnsafe();
-
+    //大小类型 还有超过chunkSize的，huge
     enum SizeClass {
         Tiny,
         Small,
         Normal
     }
-
+    //TinySubpage个数32 tiny是512以下的，512除以16 为32， 第1个是个头结点 后面31个才是有用的
     static final int numTinySubpagePools = 512 >>> 4;
 
     final PooledByteBufAllocator parent;
 
-    private final int maxOrder;
-    final int pageSize;
-    final int pageShifts;
-    final int chunkSize;
-    final int subpageOverflowMask;
-    final int numSmallSubpagePools;
-    final int directMemoryCacheAlignment;
-    final int directMemoryCacheAlignmentMask;
-    private final PoolSubpage<T>[] tinySubpagePools;
-    private final PoolSubpage<T>[] smallSubpagePools;
+    private final int maxOrder;     //二叉树的最大深度 默认11
+    final int pageSize;     //页大小 默认8K
+    final int pageShifts;   //1左移多少位得到pageSize，页大小是8k = 1 << 13 所以默认13位
+    final int chunkSize;    //块大小 默认16m
+    final int subpageOverflowMask;  //用来判断是否小于一个页大小 即小于8k
+    final int numSmallSubpagePools; //small类型的子页数组的个数
+    final int directMemoryCacheAlignment;   //对齐的缓存尺寸比如32 64
+    final int directMemoryCacheAlignmentMask;//对齐MASK，求余数用，2的幂次可以用
+    private final PoolSubpage<T>[] tinySubpagePools;    //tiny类型子页数组 默认32个
+    private final PoolSubpage<T>[] smallSubpagePools;   //small类型子页数组 默认4个
 
+    //根据块内存使用率状态分的数组，因为百分比是正数，所以就直接取整了
     private final PoolChunkList<T> q050;
     private final PoolChunkList<T> q025;
     private final PoolChunkList<T> q000;
     private final PoolChunkList<T> qInit;
     private final PoolChunkList<T> q075;
     private final PoolChunkList<T> q100;
-
+    //块列表的一些指标度量
     private final List<PoolChunkListMetric> chunkListMetrics;
 
     // Metrics for allocations and deallocations
     private long allocationsNormal;
     // We need to use the LongCounter here as this is not guarded via synchronized block.
-    private final LongCounter allocationsTiny = PlatformDependent.newLongCounter();
-    private final LongCounter allocationsSmall = PlatformDependent.newLongCounter();
-    private final LongCounter allocationsHuge = PlatformDependent.newLongCounter();
-    private final LongCounter activeBytesHuge = PlatformDependent.newLongCounter();
+    private final LongCounter allocationsTiny = PlatformDependent.newLongCounter();//Tiny的分配个数
+    private final LongCounter allocationsSmall = PlatformDependent.newLongCounter();//Small的分配个数
+    private final LongCounter allocationsHuge = PlatformDependent.newLongCounter();//huge的分配个数
+    private final LongCounter activeBytesHuge = PlatformDependent.newLongCounter();//huge的字节大小
 
     private long deallocationsTiny;
     private long deallocationsSmall;
@@ -89,21 +90,34 @@ abstract class PoolArena<T> implements PoolArenaMetric {
         this.pageSize = pageSize;
         this.maxOrder = maxOrder;
         this.pageShifts = pageShifts;
-        this.chunkSize = chunkSize;
+        this.chunkSize = chunkSize; //16777216 16M
         directMemoryCacheAlignment = cacheAlignment;
-        directMemoryCacheAlignmentMask = cacheAlignment - 1;
-        subpageOverflowMask = ~(pageSize - 1);
-        tinySubpagePools = newSubpagePoolArray(numTinySubpagePools);
+        directMemoryCacheAlignmentMask = cacheAlignment - 1;    //用来做位运算的，这里涉及的都是2的幂次，所以可以用这种方式来求
+        subpageOverflowMask = ~(pageSize - 1);      // -8192,可以取出数的高位。主要用来判断一页是否小于8k
+        tinySubpagePools = newSubpagePoolArray(numTinySubpagePools);    //创建tiny子页数组,PoolSubpage,默认个数32种尺寸
         for (int i = 0; i < tinySubpagePools.length; i ++) {
-            tinySubpagePools[i] = newSubpagePoolHead(pageSize);
+            tinySubpagePools[i] = newSubpagePoolHead(pageSize);    //创建每个tiny子页链表的头结点
         }
 
-        numSmallSubpagePools = pageShifts - 9;
+        numSmallSubpagePools = pageShifts - 9;          //默认为4种尺寸，其实就是512 1k 2k 4k
         smallSubpagePools = newSubpagePoolArray(numSmallSubpagePools);
         for (int i = 0; i < smallSubpagePools.length; i ++) {
-            smallSubpagePools[i] = newSubpagePoolHead(pageSize);
+            smallSubpagePools[i] = newSubpagePoolHead(pageSize);    //创建每个small子页链表的头结点
         }
 
+        /**
+         * 内部会按照chunk的使用率分成6组，每个组都是PoolChunkList类型的数组，里面还维护着chunk链表，
+         * 每个链表有最大能申请的容量，有内存使用率的范围，然后PoolChunkList也以链表的形式连接，只
+         * 要chunk的内存使用率发生变化，就会判断是否超出范围，超出会进行移动，具体后续会讲：
+         *
+         *  q050;//50-100
+         *  q025;//25-75
+         *  q000;//1-50
+         *  qInit;//0-25
+         *  q075;//75-100
+         *  q100;//100-100
+         */
+        //双向链表
         q100 = new PoolChunkList<T>(this, null, 100, Integer.MAX_VALUE, chunkSize);
         q075 = new PoolChunkList<T>(this, q100, 75, 100, chunkSize);
         q050 = new PoolChunkList<T>(this, q075, 50, 100, chunkSize);
@@ -115,7 +129,7 @@ abstract class PoolArena<T> implements PoolArenaMetric {
         q075.prevList(q050);
         q050.prevList(q025);
         q025.prevList(q000);
-        q000.prevList(null);
+        q000.prevList(null);    //没有前一个列表，可以直接删除块
         qInit.prevList(qInit);
 
         List<PoolChunkListMetric> metrics = new ArrayList<PoolChunkListMetric>(6);
@@ -125,7 +139,7 @@ abstract class PoolArena<T> implements PoolArenaMetric {
         metrics.add(q050);
         metrics.add(q075);
         metrics.add(q100);
-        chunkListMetrics = Collections.unmodifiableList(metrics);
+        chunkListMetrics = Collections.unmodifiableList(metrics);//使用率指标
     }
 
     private PoolSubpage<T> newSubpagePoolHead(int pageSize) {
@@ -162,6 +176,12 @@ abstract class PoolArena<T> implements PoolArenaMetric {
         return tableIdx;
     }
 
+    /**
+     * 比如pageSize=8k，二进制就是10000000000000。pageSize - 1的二进制就是01111111111111，再取反就会发现低13位全是0，高位全是1，刚好可以用来提取高位。
+     * 任何一个高位是1，值就是大于等于8k(申请内存不可能是负数，前面会有检查，最高位不会是1)，其实主要是判断是否小于8k，即一页大小
+     * @param normCapacity
+     * @return
+     */
     // capacity < pageSize
     boolean isTinyOrSmall(int normCapacity) {
         return (normCapacity & subpageOverflowMask) == 0;
@@ -173,7 +193,7 @@ abstract class PoolArena<T> implements PoolArenaMetric {
     }
 
     private void allocate(PoolThreadCache cache, PooledByteBuf<T> buf, final int reqCapacity) {
-        final int normCapacity = normalizeCapacity(reqCapacity);
+        final int normCapacity = normalizeCapacity(reqCapacity);    //进行容量的规范化
         if (isTinyOrSmall(normCapacity)) { // capacity < pageSize
             int tableIdx;
             PoolSubpage<T>[] table;
@@ -181,9 +201,9 @@ abstract class PoolArena<T> implements PoolArenaMetric {
             if (tiny) { // < 512
                 if (cache.allocateTiny(this, buf, reqCapacity, normCapacity)) {
                     // was able to allocate out of the cache so move on
-                    return;
+                    return; //从缓存中可以拿到就返回
                 }
-                tableIdx = tinyIdx(normCapacity);
+                tableIdx = tinyIdx(normCapacity);   //获取tiny数组下标
                 table = tinySubpagePools;
             } else {
                 if (cache.allocateSmall(this, buf, reqCapacity, normCapacity)) {
@@ -194,7 +214,7 @@ abstract class PoolArena<T> implements PoolArenaMetric {
                 table = smallSubpagePools;
             }
 
-            final PoolSubpage<T> head = table[tableIdx];
+            final PoolSubpage<T> head = table[tableIdx];        //获取对应规格的头结点
 
             /**
              * Synchronize on the head. This is needed as {@link PoolChunk#allocateSubpage(int)} and
@@ -202,7 +222,7 @@ abstract class PoolArena<T> implements PoolArenaMetric {
              */
             synchronized (head) {
                 final PoolSubpage<T> s = head.next;
-                if (s != head) {
+                if (s != head) {    //不是头结点就直接拿出来分配，头结点初始化的时候next和prea指向自己
                     assert s.doNotDestroy && s.elemSize == normCapacity;
                     long handle = s.allocate();
                     assert handle >= 0;
@@ -211,11 +231,11 @@ abstract class PoolArena<T> implements PoolArenaMetric {
                     return;
                 }
             }
-            synchronized (this) {
+            synchronized (this) {//多线程共享的区域需要同步
                 allocateNormal(buf, reqCapacity, normCapacity);
             }
 
-            incTinySmallAllocation(tiny);
+            incTinySmallAllocation(tiny);   //增加分配次数
             return;
         }
         if (normCapacity <= chunkSize) {
@@ -373,6 +393,13 @@ abstract class PoolArena<T> implements PoolArenaMetric {
         return (reqCapacity & ~15) + 16;
     }
 
+    /**
+     * 首先directMemoryCacheAlignment 这个就是缓存对齐的大小，比如64字节，也就是说要对齐到64，
+     * 超过就要去下一个64，而directMemoryCacheAlignmentMask是用来获取对directMemoryCacheAlignment取余的余数，所以应该是63，二进制就是111111，
+     * 跟任何数做&操作，都可以获取对64的取余的余数，其实对应的就是这个方法：
+     * @param reqCapacity
+     * @return
+     */
     int alignCapacity(int reqCapacity) {
         int delta = reqCapacity & directMemoryCacheAlignmentMask;
         return delta == 0 ? reqCapacity : reqCapacity + directMemoryCacheAlignment - delta;

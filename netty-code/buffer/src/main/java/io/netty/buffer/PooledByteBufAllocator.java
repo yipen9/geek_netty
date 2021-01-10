@@ -226,15 +226,16 @@ public class PooledByteBufAllocator extends AbstractByteBufAllocator implements 
                                   int tinyCacheSize, int smallCacheSize, int normalCacheSize,
                                   boolean useCacheForAllThreads, int directMemoryCacheAlignment) {
         super(preferDirect);
-        threadCache = new PoolThreadLocalCache(useCacheForAllThreads);
-        this.tinyCacheSize = tinyCacheSize;
-        this.smallCacheSize = smallCacheSize;
-        this.normalCacheSize = normalCacheSize;
+        threadCache = new PoolThreadLocalCache(useCacheForAllThreads);  //使用线程缓存
+        this.tinyCacheSize = tinyCacheSize;     //TINY缓存数量，默认512
+        this.smallCacheSize = smallCacheSize;   //SMALL缓存数量 默认256
+        this.normalCacheSize = normalCacheSize; //NORMAL缓存数量，默认64
         chunkSize = validateAndCalculateChunkSize(pageSize, maxOrder);
 
-        checkPositiveOrZero(nHeapArena, "nHeapArena");
-        checkPositiveOrZero(nDirectArena, "nDirectArena");
+        checkPositiveOrZero(nHeapArena, "nHeapArena");  //默认16
+        checkPositiveOrZero(nDirectArena, "nDirectArena");  //默认16
 
+        //直接内存缓存对齐
         checkPositiveOrZero(directMemoryCacheAlignment, "directMemoryCacheAlignment");
         if (directMemoryCacheAlignment > 0 && !isDirectMemoryCacheAlignmentSupported()) {
             throw new IllegalArgumentException("directMemoryCacheAlignment is not supported");
@@ -245,15 +246,15 @@ public class PooledByteBufAllocator extends AbstractByteBufAllocator implements 
                     + directMemoryCacheAlignment + " (expected: power of two)");
         }
 
-        int pageShifts = validateAndCalculatePageShifts(pageSize);
-
+        int pageShifts = validateAndCalculatePageShifts(pageSize);  //默认13
+        //堆区域初始化
         if (nHeapArena > 0) {
-            heapArenas = newArenaArray(nHeapArena);
+            heapArenas = newArenaArray(nHeapArena);     //初始化PoolArena数组
             List<PoolArenaMetric> metrics = new ArrayList<PoolArenaMetric>(heapArenas.length);
             for (int i = 0; i < heapArenas.length; i ++) {
                 PoolArena.HeapArena arena = new PoolArena.HeapArena(this,
                         pageSize, maxOrder, pageShifts, chunkSize,
-                        directMemoryCacheAlignment);
+                        directMemoryCacheAlignment);    //实例化PoolArena.HeapArena
                 heapArenas[i] = arena;
                 metrics.add(arena);
             }
@@ -262,7 +263,7 @@ public class PooledByteBufAllocator extends AbstractByteBufAllocator implements 
             heapArenas = null;
             heapArenaMetrics = Collections.emptyList();
         }
-
+        //直接缓冲区区域初始化
         if (nDirectArena > 0) {
             directArenas = newArenaArray(nDirectArena);
             List<PoolArenaMetric> metrics = new ArrayList<PoolArenaMetric>(directArenas.length);
@@ -284,12 +285,12 @@ public class PooledByteBufAllocator extends AbstractByteBufAllocator implements 
     private static <T> PoolArena<T>[] newArenaArray(int size) {
         return new PoolArena[size];
     }
-
+    //验证并计算页的移动
     private static int validateAndCalculatePageShifts(int pageSize) {
         if (pageSize < MIN_PAGE_SIZE) {
             throw new IllegalArgumentException("pageSize: " + pageSize + " (expected: " + MIN_PAGE_SIZE + ")");
         }
-
+        //判断是不是2的幂次方 不为0就不是
         if ((pageSize & pageSize - 1) != 0) {
             throw new IllegalArgumentException("pageSize: " + pageSize + " (expected: power of 2)");
         }
@@ -315,6 +316,13 @@ public class PooledByteBufAllocator extends AbstractByteBufAllocator implements 
         return chunkSize;
     }
 
+    /**
+     * 先获取线程本地缓存，如果heapArena不为空的话没有就调用allocate，
+     * 否则就用非池化的堆缓冲区。
+     * @param initialCapacity
+     * @param maxCapacity
+     * @return
+     */
     @Override
     protected ByteBuf newHeapBuffer(int initialCapacity, int maxCapacity) {
         PoolThreadCache cache = threadCache.get();
@@ -329,7 +337,7 @@ public class PooledByteBufAllocator extends AbstractByteBufAllocator implements 
                     new UnpooledHeapByteBuf(this, initialCapacity, maxCapacity);
         }
 
-        return toLeakAwareBuffer(buf);
+        return toLeakAwareBuffer(buf);//转成泄露检测的
     }
 
     @Override
