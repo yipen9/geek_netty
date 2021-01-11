@@ -362,7 +362,7 @@ final class PoolChunk<T> implements PoolChunkMetric {
             return id;
         }
         freeBytes -= runLength(id); //减去分配的大小
-        return id;
+        return id;  //可以直接返回内存映射索引的，也可以是2048
     }
 
     /**
@@ -375,26 +375,28 @@ final class PoolChunk<T> implements PoolChunkMetric {
     private long allocateSubpage(int normCapacity) {
         // Obtain the head of the PoolSubPage pool that is owned by the PoolArena and synchronize on it.
         // This is need as we may add it back and so alter the linked-list structure.
+        //获取子页数组的头结点，可以是ting数组也可以是small数组的
         PoolSubpage<T> head = arena.findSubpagePoolHead(normCapacity);
-        int d = maxOrder; // subpages are only be allocated from pages i.e., leaves
-        synchronized (head) {
-            int id = allocateNode(d);
+        int d = maxOrder; // 11 subpages are only be allocated from pages i.e., leaves
+        synchronized (head) {//修改数据要同步
+            int id = allocateNode(d);//找到能分配的内存映射索引
             if (id < 0) {
-                return id;
+                return id;//没找到
             }
 
-            final PoolSubpage<T>[] subpages = this.subpages;
-            final int pageSize = this.pageSize;
+            final PoolSubpage<T>[] subpages = this.subpages;//满二叉树的叶子节点数组
+            final int pageSize = this.pageSize;//8k
 
+            //减少一页大小的可用字节
             freeBytes -= pageSize;
-
+            //获取子页数组索引，其实跟取模一样 0-2047
             int subpageIdx = subpageIdx(id);
-            PoolSubpage<T> subpage = subpages[subpageIdx];
+            PoolSubpage<T> subpage = subpages[subpageIdx];//获取子页，第一次是空的
             if (subpage == null) {
                 subpage = new PoolSubpage<T>(head, this, id, runOffset(id), pageSize, normCapacity);
-                subpages[subpageIdx] = subpage;
+                subpages[subpageIdx] = subpage;//添加进子页数组
             } else {
-                subpage.init(head, normCapacity);
+                subpage.init(head, normCapacity);//重新初始化
             }
             return subpage.allocate();
         }
@@ -443,7 +445,7 @@ final class PoolChunk<T> implements PoolChunkMetric {
             assert val == unusable : String.valueOf(val);
             buf.init(this, nioBuffer, handle, runOffset(memoryMapIdx) + offset,
                     reqCapacity, runLength(memoryMapIdx), arena.parent.threadCache());
-        } else {
+        } else {//子页初始化
             initBufWithSubpage(buf, nioBuffer, handle, bitmapIdx, reqCapacity);
         }
     }
@@ -476,7 +478,7 @@ final class PoolChunk<T> implements PoolChunkMetric {
         memoryMap[id] = val;
     }
 
-    private byte depth(int id) {
+    private byte depth(int id) {//获取id对应的深度
         return depthMap[id];
     }
 
@@ -486,12 +488,12 @@ final class PoolChunk<T> implements PoolChunkMetric {
         return INTEGER_SIZE_MINUS_ONE - Integer.numberOfLeadingZeros(val);
     }
 
-    //深度值越小，说明能分配的越多，越大能分配的越少
+    //根据id计算此次分配的大小。
     private int runLength(int id) {
         // represents the size in #bytes supported by node 'id' in the tree
         return 1 << log2ChunkSize - depth(id);
     }
-
+    //比如id=1025，1 << depth(id)=1024,1024^1025=1。即shift =1
     private int runOffset(int id) {
         // represents the 0-based offset in #bytes from start of the byte-array chunk
         int shift = id ^ 1 << depth(id);
@@ -544,5 +546,10 @@ final class PoolChunk<T> implements PoolChunkMetric {
 
     void destroy() {
         arena.destroyChunk(this);
+    }
+
+    public static void main(String[] args) {
+        int shift = 128 ^ 1 << 7;
+        System.out.println(shift);
     }
 }

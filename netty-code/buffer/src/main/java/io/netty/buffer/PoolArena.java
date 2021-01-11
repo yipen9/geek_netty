@@ -343,12 +343,12 @@ abstract class PoolArena<T> implements PoolArenaMetric {
         int tableIdx;
         PoolSubpage<T>[] table;
         if (isTiny(elemSize)) { // < 512
-            tableIdx = elemSize >>> 4;
-            table = tinySubpagePools;
+            tableIdx = elemSize >>> 4;  //获取索引
+            table = tinySubpagePools; //获取子页数组
         } else {
             tableIdx = 0;
             elemSize >>>= 10;
-            while (elemSize != 0) {
+            while (elemSize != 0) {//尺寸和索引对应: 512->0 1024->1 2048->2 4096->3 刚是smallSubpagePools的全部索引
                 elemSize >>>= 1;
                 tableIdx ++;
             }
