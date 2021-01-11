@@ -204,6 +204,7 @@ final class PoolSubpage<T> implements PoolSubpageMetric {
 
     /**
      * 如果没有加上0x4000000000000000L，第一次分配bitmapIdx=0，返回的也是2048。这样在后面的initBuf方法就会出问题
+     * 0x4000000000000000L为高位标示符+bitmapIdx左移32位，不会和高位重叠；+memoryMapIdx低位32位
      * @param bitmapIdx
      * @return
      */

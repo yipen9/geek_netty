@@ -438,7 +438,9 @@ final class PoolChunk<T> implements PoolChunkMetric {
     }
 
     void initBuf(PooledByteBuf<T> buf, ByteBuffer nioBuffer, long handle, int reqCapacity) {
+        //获取低32位的handle，即memoryMapIdx
         int memoryMapIdx = memoryMapIdx(handle);
+        //这里获取的如果是子页的handle,bitmapIdx不为0，那高32位，并不是真正的位图索引，最高非符号位多了1，如果是normal的，那就是0
         int bitmapIdx = bitmapIdx(handle);
         if (bitmapIdx == 0) {
             byte val = value(memoryMapIdx);
