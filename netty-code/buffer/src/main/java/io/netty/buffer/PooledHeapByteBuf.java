@@ -151,6 +151,11 @@ class PooledHeapByteBuf extends PooledByteBuf<byte[]> {
         HeapByteBufUtil.setMediumLE(memory, idx(index), value);
     }
 
+    /**
+     * 使用到offset,写入到memory对应的位置
+     * @param index
+     * @param value
+     */
     @Override
     protected void _setInt(int index, int   value) {
         HeapByteBufUtil.setInt(memory, idx(index), value);

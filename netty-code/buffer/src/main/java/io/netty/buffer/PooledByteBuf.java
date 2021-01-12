@@ -66,7 +66,7 @@ abstract class PooledByteBuf<T> extends AbstractReferenceCountedByteBuf {
         tmpNioBuf = nioBuffer;
         allocator = chunk.arena.parent;
         this.cache = cache;
-        this.handle = handle;
+        this.handle = handle;   //内存回收的时候会使用
         this.offset = offset;
         this.length = length;
         this.maxLength = maxLength;

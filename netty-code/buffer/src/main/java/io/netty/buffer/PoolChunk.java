@@ -496,6 +496,7 @@ final class PoolChunk<T> implements PoolChunkMetric {
         return 1 << log2ChunkSize - depth(id);
     }
     //比如id=1025，1 << depth(id)=1024,1024^1025=1。即shift =1
+    //返回run对应的offset，通过id，计算之前的runLength* shift个数，就是现在的分配的offset，也就是开始的位置
     private int runOffset(int id) {
         // represents the 0-based offset in #bytes from start of the byte-array chunk
         int shift = id ^ 1 << depth(id);
