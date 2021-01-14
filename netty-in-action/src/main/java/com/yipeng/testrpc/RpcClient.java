@@ -1,17 +1,14 @@
-package com.yipeng.rpc;
+package com.yipeng.testrpc;
 
-import com.yipeng.netty.RequestMessage;
-import com.yipeng.netty.client.codec.OrderFrameDecoder;
-import com.yipeng.netty.client.codec.OrderFrameEncoder;
-import com.yipeng.netty.client.codec.OrderProtocolDecoder;
-import com.yipeng.netty.client.codec.OrderProtocolEncoder;
-import com.yipeng.netty.common.order.OrderOperation;
-import com.yipeng.rpc.codec.RPCFrameDeCoder;
-import com.yipeng.rpc.codec.RPCFrameEncoder;
-import com.yipeng.rpc.codec.RPCProtocolDecoder;
-import com.yipeng.rpc.codec.RPCProtocolEncoder;
-import com.yipeng.rpc.handler.RpcClientHandler;
-import com.yipeng.rpc.model.LogMessage;
+import com.yipeng.rpc.codec.YiTcpDecoder;
+import com.yipeng.rpc.codec.YiTcpEncoder;
+import com.yipeng.rpc.model.YiData;
+import com.yipeng.testrpc.codec.RPCFrameDeCoder;
+import com.yipeng.testrpc.codec.RPCFrameEncoder;
+import com.yipeng.testrpc.codec.RPCProtocolDecoder;
+import com.yipeng.testrpc.codec.RPCProtocolEncoder;
+import com.yipeng.testrpc.handler.RpcClientHandler;
+import com.yipeng.testrpc.model.LogMessage;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -31,12 +28,14 @@ public class RpcClient {
             @Override
             protected void initChannel(NioSocketChannel ch) throws Exception {
                 ChannelPipeline pipeline = ch.pipeline();
-                pipeline.addLast(new RPCFrameDeCoder());
-                pipeline.addLast(new RPCProtocolDecoder());
+//                pipeline.addLast(new RPCFrameDeCoder());
+//                pipeline.addLast(new RPCProtocolDecoder());
+//
+//                pipeline.addLast(new RPCFrameEncoder());
+//                pipeline.addLast(new RPCProtocolEncoder());
 
-                pipeline.addLast(new RPCFrameEncoder());
-                pipeline.addLast(new RPCProtocolEncoder());
-
+                pipeline.addLast(new YiTcpDecoder());
+                pipeline.addLast(new YiTcpEncoder());
                 pipeline.addLast(rpcClientHandler);
                 pipeline.addLast(new LoggingHandler(LogLevel.DEBUG));
 
@@ -44,11 +43,13 @@ public class RpcClient {
         });
 
         ChannelFuture channelFuture = bootstrap.connect("127.0.0.1", 8027).sync();
-        LogMessage logMessage = new LogMessage();
-        logMessage.setRequestId(1111l);
-        logMessage.setMessageBody("aaaaaaaaaaaaaaaaa");
-        rpcClientHandler.register(logMessage);
-        channelFuture.channel().writeAndFlush(logMessage);
+        YiData yiData = new YiData();
+        yiData.setVersion((short) 123);
+        yiData.setData("hello world!");
+//        rpcClientHandler.register(logMessage);
+        for (int i = 0; i < 1000; i++) {
+            ChannelFuture channelFuture1 = channelFuture.channel().writeAndFlush(yiData);
+        }
         channelFuture.channel().closeFuture().sync();
     }
 }

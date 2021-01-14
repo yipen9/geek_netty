@@ -1,9 +1,9 @@
-package com.yipeng.rpc;
+package com.yipeng.testrpc;
 
-import com.yipeng.rpc.handler.Handler;
-import com.yipeng.rpc.handler.LogHandler;
-import com.yipeng.rpc.model.LogMessage;
-import com.yipeng.rpc.model.RPCMessage;
+import com.yipeng.testrpc.handler.Handler;
+import com.yipeng.testrpc.handler.LogHandler;
+import com.yipeng.testrpc.model.LogMessage;
+import com.yipeng.testrpc.model.RPCMessage;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;

@@ -1,4 +1,4 @@
-package com.yipeng.rpc.model;
+package com.yipeng.testrpc.model;
 
 import com.yipeng.netty.util.JsonUtil;
 import io.netty.buffer.ByteBuf;

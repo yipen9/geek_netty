@@ -1,8 +1,5 @@
 package com.yipeng.nio;
 
-import com.oracle.tools.packager.IOUtils;
-import sun.nio.ch.IOUtil;
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

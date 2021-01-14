@@ -1,6 +1,6 @@
-package com.yipeng.rpc.handler;
+package com.yipeng.testrpc.handler;
 
-import com.yipeng.rpc.model.RPCMessage;
+import com.yipeng.testrpc.model.RPCMessage;
 
 public class LogHandler implements Handler {
 

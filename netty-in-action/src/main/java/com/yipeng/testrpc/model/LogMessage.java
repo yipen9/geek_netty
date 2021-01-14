@@ -1,4 +1,4 @@
-package com.yipeng.rpc.model;
+package com.yipeng.testrpc.model;
 
 public class LogMessage extends RPCMessage<String> {
     public static String type = "log";
