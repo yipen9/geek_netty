@@ -48,7 +48,8 @@ public class YiTcpDecoder extends ByteToMessageDecoder {
         YiData data1 = new YiData();
         data1.setData(data);
         data1.setVersion(version);
-        in.readerIndex(MAGIC_LENGTH + VERSION_LENGTH + DATA_LENGTH_FIELD_LENGTH + length);
+        in.skipBytes(MAGIC_LENGTH + VERSION_LENGTH + DATA_LENGTH_FIELD_LENGTH + length);
+        in.discardReadBytes();
         return data1;
     }
 

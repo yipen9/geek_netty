@@ -50,6 +50,7 @@ public class RpcClient {
         for (int i = 0; i < 1000; i++) {
             ChannelFuture channelFuture1 = channelFuture.channel().writeAndFlush(yiData);
         }
+
         channelFuture.channel().closeFuture().sync();
     }
 }
