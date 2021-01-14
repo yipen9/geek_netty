@@ -45,10 +45,20 @@ public class RpcClient {
         ChannelFuture channelFuture = bootstrap.connect("127.0.0.1", 8027).sync();
         YiData yiData = new YiData();
         yiData.setVersion((short) 123);
-        yiData.setData("hello world!");
+
 //        rpcClientHandler.register(logMessage);
         for (int i = 0; i < 1000; i++) {
-            ChannelFuture channelFuture1 = channelFuture.channel().writeAndFlush(yiData);
+            if (i % 2 == 0) {
+                yiData.setData("hello world!");
+                ChannelFuture channelFuture1 = channelFuture.channel().writeAndFlush(yiData);
+            }else{
+                StringBuffer sb = new StringBuffer();
+                for (int j = 0; j < 1024; j++) {
+                    sb.append("a");
+                }
+                yiData.setData(sb.toString());
+                ChannelFuture channelFuture1 = channelFuture.channel().writeAndFlush(yiData);
+            }
         }
 
         channelFuture.channel().closeFuture().sync();

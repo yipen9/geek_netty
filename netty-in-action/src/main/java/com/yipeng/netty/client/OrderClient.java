@@ -1,6 +1,5 @@
 package com.yipeng.netty.client;
 
-import com.sun.org.apache.regexp.internal.RE;
 import com.yipeng.netty.RequestMessage;
 import com.yipeng.netty.client.codec.OrderFrameEncoder;
 import com.yipeng.netty.client.codec.OrderProtocolDecoder;
