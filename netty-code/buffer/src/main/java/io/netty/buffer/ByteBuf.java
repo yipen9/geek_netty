@@ -521,6 +521,7 @@ public abstract class ByteBuf implements ReferenceCounted, Comparable<ByteBuf> {
      * some, all, or none of read bytes depending on its internal implementation to reduce
      * overall memory bandwidth consumption at the cost of potentially additional memory
      * consumption.
+     * 根据具体实现丢弃一部分内存，避免全部搬运时的性能损失
      */
     public abstract ByteBuf discardSomeReadBytes();
 

@@ -94,7 +94,6 @@ public abstract class MessageToMessageEncoder<I> extends ChannelOutboundHandlerA
                 if (out.isEmpty()) {
                     out.recycle();
                     out = null;
-
                     throw new EncoderException(
                             StringUtil.simpleClassName(this) + " must produce at least one message.");
                 }

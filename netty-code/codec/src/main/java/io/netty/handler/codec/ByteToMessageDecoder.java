@@ -308,20 +308,20 @@ public abstract class ByteToMessageDecoder extends ChannelInboundHandlerAdapter 
             } catch (Exception e) {
                 throw new DecoderException(e);
             } finally {
-                if (cumulation != null && !cumulation.isReadable()) {
+                if (cumulation != null && !cumulation.isReadable()) {   //cumulation没有可读的了
                     numReads = 0;
                     cumulation.release();
                     cumulation = null;
-                } else if (++ numReads >= discardAfterReads) {
+                } else if (++ numReads >= discardAfterReads) {  //超过discardAfterReads就丢弃，默认是16
                     // We did enough reads already try to discard some bytes so we not risk to see a OOME.
                     // See https://github.com/netty/netty/issues/4275
                     numReads = 0;
                     discardSomeReadBytes();
                 }
 
-                int size = out.size();
+                int size = out.size();  //可以写入的个数
                 firedChannelRead |= out.insertSinceRecycled();
-                fireChannelRead(ctx, out, size);
+                fireChannelRead(ctx, out, size);    //为0此方法就不会在往后传递
                 out.recycle();
             }
         } else {
