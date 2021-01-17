@@ -876,7 +876,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
 
             int size;
             try {
-                msg = filterOutboundMessage(msg);   //封装成直接缓冲区
+                msg = filterOutboundMessage(msg);   //封装成直接缓冲区DirectBuffer
                 size = pipeline.estimatorHandle().size(msg);//获取缓冲区大小
                 if (size < 0) {
                     size = 0;

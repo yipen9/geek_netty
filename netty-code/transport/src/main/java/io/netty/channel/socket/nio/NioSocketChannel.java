@@ -407,7 +407,7 @@ public class NioSocketChannel extends AbstractNioByteChannel implements io.netty
                     // to check if the total size of all the buffers is non-zero.
                     ByteBuffer buffer = nioBuffers[0];
                     int attemptedBytes = buffer.remaining();
-                    final int localWrittenBytes = ch.write(buffer);
+                    final int localWrittenBytes = ch.write(buffer);     //正在将buffer刷新到javachannel里面
                     if (localWrittenBytes <= 0) {
                         incompleteWrite(true);
                         return;
