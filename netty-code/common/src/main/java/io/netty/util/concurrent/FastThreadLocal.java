@@ -121,10 +121,11 @@ public class FastThreadLocal<V> {
         Set<FastThreadLocal<?>> variablesToRemove = (Set<FastThreadLocal<?>>) v;
         variablesToRemove.remove(variable);
     }
-
+    // 每一个FastThreadLocal对应的Value的下标
     private final int index;
 
     public FastThreadLocal() {
+        // 每一个FastThreadLocal对象的index都是不同的，因此确定了 value在数组中的位置
         index = InternalThreadLocalMap.nextVariableIndex();
     }
 

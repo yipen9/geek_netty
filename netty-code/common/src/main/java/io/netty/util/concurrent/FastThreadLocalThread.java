@@ -23,8 +23,9 @@ import io.netty.util.internal.UnstableApi;
  */
 public class FastThreadLocalThread extends Thread {
     // This will be set to true if we have a chance to wrap the Runnable.
+    // 任务执行完，是否清除FastThreadLocal的标记
     private final boolean cleanupFastThreadLocals;
-
+    // 类似于Thread类中ThreadLocalMap，为了实现FastThreadLocal
     private InternalThreadLocalMap threadLocalMap;
 
     public FastThreadLocalThread() {

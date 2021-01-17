@@ -45,7 +45,7 @@ final class PoolThreadCache {
     final PoolArena<byte[]> heapArena;
     final PoolArena<ByteBuffer> directArena;
 
-    // Hold the caches for the different size classes, which are tiny, small and normal.
+    // Hold the caches for the different size classes, which are tiny, small and normal.里面缓存这一堆MemoryRegionCache类型的数组。
     private final MemoryRegionCache<byte[]>[] tinySubPageHeapCaches;
     private final MemoryRegionCache<byte[]>[] smallSubPageHeapCaches;
     private final MemoryRegionCache<ByteBuffer>[] tinySubPageDirectCaches;
@@ -71,7 +71,7 @@ final class PoolThreadCache {
         this.freeSweepAllocationThreshold = freeSweepAllocationThreshold;
         this.heapArena = heapArena;
         this.directArena = directArena;
-        if (directArena != null) {
+        if (directArena != null) {  //直接缓冲区的缓存
             tinySubPageDirectCaches = createSubPageCaches(
                     tinyCacheSize, PoolArena.numTinySubpagePools, SizeClass.Tiny);
             smallSubPageDirectCaches = createSubPageCaches(
@@ -89,7 +89,7 @@ final class PoolThreadCache {
             normalDirectCaches = null;
             numShiftsNormalDirect = -1;
         }
-        if (heapArena != null) {
+        if (heapArena != null) {//堆内缓冲区
             // Create the caches for the heap allocations
             tinySubPageHeapCaches = createSubPageCaches(
                     tinyCacheSize, PoolArena.numTinySubpagePools, SizeClass.Tiny);
@@ -187,7 +187,7 @@ final class PoolThreadCache {
             return false;
         }
         boolean allocated = cache.allocate(buf, reqCapacity);
-        if (++ allocations >= freeSweepAllocationThreshold) {
+        if (++ allocations >= freeSweepAllocationThreshold) {//已分配次数是否大于清除次数阈值
             allocations = 0;
             trim();
         }
@@ -279,7 +279,7 @@ final class PoolThreadCache {
         return cache.free(finalizer);
     }
 
-    void trim() {
+    void trim() {   //清空所有缓存
         trim(tinySubPageDirectCaches);
         trim(smallSubPageDirectCaches);
         trim(normalDirectCaches);
@@ -367,14 +367,14 @@ final class PoolThreadCache {
     }
 
     private abstract static class MemoryRegionCache<T> {
-        private final int size;
-        private final Queue<Entry<T>> queue;
-        private final SizeClass sizeClass;
-        private int allocations;
+        private final int size; //缓存的个数
+        private final Queue<Entry<T>> queue;    //实体队列
+        private final SizeClass sizeClass;  /**{@link PooledByteBufAllocator#DEFAULT_TINY_CACHE_SIZE}*/
+        private int allocations;    //已经分配个数，后面释放会使用
 
         MemoryRegionCache(int size, SizeClass sizeClass) {
             this.size = MathUtil.safeFindNextPositivePowerOfTwo(size);
-            queue = PlatformDependent.newFixedMpscQueue(this.size);
+            queue = PlatformDependent.newFixedMpscQueue(this.size);//多生产者，单消费者队列
             this.sizeClass = sizeClass;
         }
 
@@ -403,15 +403,15 @@ final class PoolThreadCache {
          * Allocate something out of the cache if possible and remove the entry from the cache.
          */
         public final boolean allocate(PooledByteBuf<T> buf, int reqCapacity) {
-            Entry<T> entry = queue.poll();
+            Entry<T> entry = queue.poll();  //从队列取出实体Entry，然后进行initBuf
             if (entry == null) {
                 return false;
             }
             initBuf(entry.chunk, entry.nioBuffer, entry.handle, buf, reqCapacity);
-            entry.recycle();
+            entry.recycle();    //回收实体
 
             // allocations is not thread-safe which is fine as this is only called from the same thread all time.
-            ++ allocations;
+            ++ allocations; //已分配出去的+1
             return true;
         }
 
@@ -464,11 +464,11 @@ final class PoolThreadCache {
             chunk.arena.freeChunk(chunk, handle, sizeClass, nioBuffer, finalizer);
         }
 
-        static final class Entry<T> {
-            final Handle<Entry<?>> recyclerHandle;
-            PoolChunk<T> chunk;
-            ByteBuffer nioBuffer;
-            long handle = -1;
+        static final class Entry<T> {//缓存就是缓存块的内对应的内存信息
+            final Handle<Entry<?>> recyclerHandle;  //回收处理器
+            PoolChunk<T> chunk;     //哪个块
+            ByteBuffer nioBuffer;   //直接缓存区
+            long handle = -1;       //内存句柄
 
             Entry(Handle<Entry<?>> recyclerHandle) {
                 this.recyclerHandle = recyclerHandle;

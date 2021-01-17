@@ -31,26 +31,26 @@ import java.util.concurrent.atomic.AtomicInteger;
  * unless you know what you are doing.
  */
 class UnpaddedInternalThreadLocalMap {
-
+    //从ThreadLocal中获取InternalThreadLocalMap
     static final ThreadLocal<InternalThreadLocalMap> slowThreadLocalMap = new ThreadLocal<InternalThreadLocalMap>();
-    static final AtomicInteger nextIndex = new AtomicInteger();
+    static final AtomicInteger nextIndex = new AtomicInteger();//索引
 
     /** Used by {@link FastThreadLocal} */
-    Object[] indexedVariables;
+    Object[] indexedVariables;  //放对象的数组
 
     // Core thread-locals
-    int futureListenerStackDepth;
-    int localChannelReaderStackDepth;
-    Map<Class<?>, Boolean> handlerSharableCache;
+    int futureListenerStackDepth;//未来监听器栈的深度
+    int localChannelReaderStackDepth;//本地通道读的栈深度
+    Map<Class<?>, Boolean> handlerSharableCache;//处理器共享缓存
     IntegerHolder counterHashCode;
     ThreadLocalRandom random;
-    Map<Class<?>, TypeParameterMatcher> typeParameterMatcherGetCache;
-    Map<Class<?>, Map<String, TypeParameterMatcher>> typeParameterMatcherFindCache;
+    Map<Class<?>, TypeParameterMatcher> typeParameterMatcherGetCache;//参数类型匹配缓存
+    Map<Class<?>, Map<String, TypeParameterMatcher>> typeParameterMatcherFindCache;//参数类型匹配寻找缓存
 
     // String-related thread-locals
     StringBuilder stringBuilder;
-    Map<Charset, CharsetEncoder> charsetEncoderCache;
-    Map<Charset, CharsetDecoder> charsetDecoderCache;
+    Map<Charset, CharsetEncoder> charsetEncoderCache;//编码器缓存
+    Map<Charset, CharsetDecoder> charsetDecoderCache;//解码器缓存
 
     // ArrayList-related thread-locals
     ArrayList<Object> arrayList;

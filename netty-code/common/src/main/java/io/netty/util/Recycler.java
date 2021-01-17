@@ -108,7 +108,12 @@ public abstract class Recycler<T> {
     private final int maxSharedCapacityFactor;
     private final int ratioMask;
     private final int maxDelayedQueuesPerThread;
-
+    /**
+     * 多线程中每个线程都可能会有创建对象，释放对象，
+     * 当他们创建的时候，首先会从当前线程本地变量中获取，这样做避免了多线程之间的竞争问题。
+     * 每个线程都拥有一个特殊的栈Stack，一般情况下就是从Stack中获取，回收也是放这个里面回收，Stack内部是一个数组，
+     * 用索引记录，存取非常快。
+     */
     private final FastThreadLocal<Stack<T>> threadLocal = new FastThreadLocal<Stack<T>>() {
         @Override
         protected Stack<T> initialValue() {
@@ -154,7 +159,7 @@ public abstract class Recycler<T> {
     }
 
     @SuppressWarnings("unchecked")
-
+    //获取T类型的对象
     public final T get() {
         if (maxCapacityPerThread == 0) {
             //表明没有开启池化
@@ -196,9 +201,11 @@ public abstract class Recycler<T> {
         return threadLocal.get().size;
     }
 
+    //创建对象，传入处理器的创建方法
     protected abstract T newObject(Handle<T> handle);
 
     public interface Handle<T> {
+        //回收
         void recycle(T object);
     }
 

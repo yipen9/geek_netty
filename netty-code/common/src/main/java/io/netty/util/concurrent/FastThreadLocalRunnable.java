@@ -29,6 +29,7 @@ final class FastThreadLocalRunnable implements Runnable {
         try {
             runnable.run();
         } finally {
+            // 任务执行完之后，清除当前线程所有FastThreadLocal，removeAll方法中会调用我们实现的onRemoval方法
             FastThreadLocal.removeAll();
         }
     }
