@@ -44,10 +44,10 @@ public class ProtobufVarint32LengthFieldPrepender extends MessageToByteEncoder<B
     protected void encode(
             ChannelHandlerContext ctx, ByteBuf msg, ByteBuf out) throws Exception {
         int bodyLen = msg.readableBytes();
-        int headerLen = computeRawVarint32Size(bodyLen);
-        out.ensureWritable(headerLen + bodyLen);
-        writeRawVarint32(out, bodyLen);
-        out.writeBytes(msg, msg.readerIndex(), bodyLen);
+        int headerLen = computeRawVarint32Size(bodyLen); //计算bodyLen占用的字节数
+        out.ensureWritable(headerLen + bodyLen);    //确保writeable，headerLen（记录message的长度）+bodyLen
+        writeRawVarint32(out, bodyLen); //写入变长的headerLen
+        out.writeBytes(msg, msg.readerIndex(), bodyLen);    //写入msg内容
     }
 
     /**

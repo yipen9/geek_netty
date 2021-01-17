@@ -109,7 +109,7 @@ public class AdaptiveRecvByteBufAllocator extends DefaultMaxMessagesRecvByteBufA
             this.maxIndex = maxIndex;
 
             index = getSizeTableIndex(initial);
-            //初始值
+            //初始值默认是1024
             nextReceiveBufferSize = SIZE_TABLE[index];
         }
 
@@ -139,8 +139,8 @@ public class AdaptiveRecvByteBufAllocator extends DefaultMaxMessagesRecvByteBufA
         private void record(int actualReadBytes) {
             //尝试是否可以减小分配的空间仍然能满足需求：
             //尝试方法：当前实际读取的size是否小于或等于打算缩小的尺寸
-            if (actualReadBytes <= SIZE_TABLE[max(0, index - INDEX_DECREMENT - 1)]) {
-                //decreaseNow: 连续2次尝试减小都可以
+            if (actualReadBytes <= SIZE_TABLE[max(0, index - INDEX_DECREMENT - 1)]) {   //至少要大2个index
+                //decreaseNow: 连续2次尝试减小都可以，减少幅度为INDEX_DECREMENT，但要大于minIndex
                 if (decreaseNow) {
                     //减小
                     index = max(index - INDEX_DECREMENT, minIndex);
@@ -193,7 +193,7 @@ public class AdaptiveRecvByteBufAllocator extends DefaultMaxMessagesRecvByteBufA
         }
 
         //控制size table区间最小值minIndex
-        int minIndex = getSizeTableIndex(minimum);
+        int minIndex = getSizeTableIndex(minimum);  //默认分配最小64，在SIZE_TABLE的minIndex是3
         if (SIZE_TABLE[minIndex] < minimum) {
             this.minIndex = minIndex + 1;
         } else {
@@ -201,14 +201,14 @@ public class AdaptiveRecvByteBufAllocator extends DefaultMaxMessagesRecvByteBufA
         }
 
         //控制size table区间最大值maxIndex
-        int maxIndex = getSizeTableIndex(maximum);
+        int maxIndex = getSizeTableIndex(maximum);  //最大分配65536在SIZE_TABLE的index是38
         if (SIZE_TABLE[maxIndex] > maximum) {
             this.maxIndex = maxIndex - 1;
         } else {
             this.maxIndex = maxIndex;
         }
 
-        this.initial = initial;
+        this.initial = initial;     //默认的size是1024
     }
 
     @SuppressWarnings("deprecation")

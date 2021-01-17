@@ -138,16 +138,17 @@ public abstract class AbstractNioByteChannel extends AbstractNioChannel {
                 return;
             }
             final ChannelPipeline pipeline = pipeline();
+            /**默认{@link io.netty.buffer.PooledByteBufAllocator}*/
             final ByteBufAllocator allocator = config.getAllocator();
             //io.netty.channel.DefaultChannelConfig中设置RecvByteBufAllocator，默认AdaptiveRecvByteBufAllocator
             final RecvByteBufAllocator.Handle allocHandle = recvBufAllocHandle();
-            allocHandle.reset(config);
+            allocHandle.reset(config);  //重置，将totalMessages = totalBytesRead = 0;
 
             ByteBuf byteBuf = null;
             boolean close = false;
             try {
                 do {
-                    //尽可能分配合适的大小：guess
+                    //尽可能分配合适的大小：guess，初始化默认是1024
                     byteBuf = allocHandle.allocate(allocator);
                     //读并且记录读了多少，如果读满了，下次continue的话就直接扩容。
                     allocHandle.lastBytesRead(doReadBytes(byteBuf));    //doReadBytes,为NioSocketChannel

@@ -56,7 +56,7 @@ final class PoolSubpage<T> implements PoolSubpageMetric {
         this.memoryMapIdx = memoryMapIdx;//内存映射索引
         this.runOffset = runOffset;//块内偏移
         this.pageSize = pageSize;//页大小
-        //最多需要多少个long类型的位图来描述一页分割成16B的所有内存的状态,long是64位
+        //最多需要多少个long类型的位图来描述一页分割成16B(Tiny最小单位)的所有内存的状态,long是64位
         bitmap = new long[pageSize >>> 10]; // pageSize / 16 / 64
         init(head, elemSize);
     }

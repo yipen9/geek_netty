@@ -163,6 +163,11 @@ abstract class PooledByteBuf<T> extends AbstractReferenceCountedByteBuf {
 
     //归还对象到“池”里去，pipeline的tail会调用
     //其实就是释放内存资源，属性重新设置回默认，自己也回收到对象池里。
+    /**
+     * PoolThreadCache中的内存块都是在当前线程使用完创建的ByteBuf对象后，
+     * 通过调用其{@link AbstractReferenceCountedByteBuf#release()}释放内存时直接缓存到当前PoolThreadCache中的，
+     * 其并不会直接将内存块返回给PoolArena。
+     */
     @Override
     protected final void deallocate() {
         if (handle >= 0) {
@@ -247,7 +252,7 @@ abstract class PooledByteBuf<T> extends AbstractReferenceCountedByteBuf {
     @Override
     public final int setBytes(int index, ScatteringByteChannel in, int length) throws IOException {
         try {
-            return in.read(internalNioBuffer(index, length));
+            return in.read(internalNioBuffer(index, length));//从java对应的channel中读取写入到java nio ByteBuffer
         } catch (ClosedChannelException ignored) {
             return -1;
         }

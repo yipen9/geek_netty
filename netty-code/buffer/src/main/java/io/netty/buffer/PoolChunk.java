@@ -177,7 +177,7 @@ final class PoolChunk<T> implements PoolChunkMetric {
          * 因此depthMap在初始化后，各元素的值也就不发生变化了。
          */
         depthMap = new byte[memoryMap.length];
-        int memoryMapIndex = 1;
+        int memoryMapIndex = 1; //index从1开始
         for (int d = 0; d <= maxOrder; ++ d) { // move down the tree one level at a time
             int depth = 1 << d;     //长度2^d
             for (int p = 0; p < depth; ++ p) {
@@ -411,11 +411,11 @@ final class PoolChunk<T> implements PoolChunkMetric {
      * @param handle handle to free
      */
     void free(long handle, ByteBuffer nioBuffer) {
-        int memoryMapIdx = memoryMapIdx(handle);
+        int memoryMapIdx = memoryMapIdx(handle);    //找到对于memoryMapIdx
         int bitmapIdx = bitmapIdx(handle);
 
         if (bitmapIdx != 0) { // free a subpage
-            PoolSubpage<T> subpage = subpages[subpageIdx(memoryMapIdx)];
+            PoolSubpage<T> subpage = subpages[subpageIdx(memoryMapIdx)];    //找到对应的subPage
             assert subpage != null && subpage.doNotDestroy;
 
             // Obtain the head of the PoolSubPage pool that is owned by the PoolArena and synchronize on it.
@@ -465,7 +465,9 @@ final class PoolChunk<T> implements PoolChunkMetric {
         PoolSubpage<T> subpage = subpages[subpageIdx(memoryMapIdx)];
         assert subpage.doNotDestroy;
         assert reqCapacity <= subpage.elemSize;
-
+        //runOffset(memoryMapIdx) + (bitmapIdx & 0x3FFFFFFF) * subpage.elemSize + offset
+        //表示分片的page（默认8k）对应的内存offset+在当前page中subPage对应的offset（个数*长度）+poolchunk的offset。
+        //也就是此buf在memory中的offset
         buf.init(
             this, nioBuffer, handle,
             runOffset(memoryMapIdx) + (bitmapIdx & 0x3FFFFFFF) * subpage.elemSize + offset,
