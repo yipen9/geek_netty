@@ -6,7 +6,7 @@ import io.netty.buffer.ByteBufAllocator;
 public class PoolThreadCacheDemo {
     public static void main(String[] args) {
         ByteBuf buf = ByteBufAllocator.DEFAULT.heapBuffer(5);
-        buf = null;
+        buf.release();
         buf = ByteBufAllocator.DEFAULT.heapBuffer(5);
     }
 }

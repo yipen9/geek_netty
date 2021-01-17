@@ -168,7 +168,7 @@ public abstract class Recycler<T> {
         Stack<T> stack = threadLocal.get();
         DefaultHandle<T> handle = stack.pop();
         //试图从“池”中取出一个，没有就新建一个
-        if (handle == null) {
+         if (handle == null) {
             handle = stack.newHandle();
             handle.value = newObject(handle);
         }

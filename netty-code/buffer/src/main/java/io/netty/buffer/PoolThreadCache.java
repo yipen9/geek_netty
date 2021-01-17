@@ -32,6 +32,8 @@ import java.util.Queue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
+ * PoolThreadCahche是Netty内存管理中能够实现高效内存申请和释放的一个重要原因
+ * Netty会为每一个线程都维护一个PoolThreadCache对象
  * Acts a Thread cache for allocations. This implementation is moduled after
  * <a href="http://people.freebsd.org/~jasone/jemalloc/bsdcan2006/jemalloc.pdf">jemalloc</a> and the descripted
  * technics of
@@ -46,6 +48,7 @@ final class PoolThreadCache {
     final PoolArena<ByteBuffer> directArena;
 
     // Hold the caches for the different size classes, which are tiny, small and normal.里面缓存这一堆MemoryRegionCache类型的数组。
+    //在MemoryRegionCache中保存了一个有界队列，对于tiny类型的缓存，该队列的长度为512，对于small类型的缓存，该队列的长度为256，对于normal类型的缓存，该队列的长度为64
     private final MemoryRegionCache<byte[]>[] tinySubPageHeapCaches;
     private final MemoryRegionCache<byte[]>[] smallSubPageHeapCaches;
     private final MemoryRegionCache<ByteBuffer>[] tinySubPageDirectCaches;
@@ -393,10 +396,10 @@ final class PoolThreadCache {
             boolean queued = queue.offer(entry);
             if (!queued) {
                 // If it was not possible to cache the chunk, immediately recycle the entry
-                entry.recycle();
+                entry.recycle();    //如果不成功，立刻回收这个entry
             }
 
-            return queued;
+            return queued;  //返回是否入队成功
         }
 
         /**
@@ -468,7 +471,7 @@ final class PoolThreadCache {
             final Handle<Entry<?>> recyclerHandle;  //回收处理器
             PoolChunk<T> chunk;     //哪个块
             ByteBuffer nioBuffer;   //直接缓存区
-            long handle = -1;       //内存句柄
+            long handle = -1;       // PoolArena中时，能够快速获取其所在的位置
 
             Entry(Handle<Entry<?>> recyclerHandle) {
                 this.recyclerHandle = recyclerHandle;
@@ -484,7 +487,7 @@ final class PoolThreadCache {
 
         @SuppressWarnings("rawtypes")
         private static Entry newEntry(PoolChunk<?> chunk, ByteBuffer nioBuffer, long handle) {
-            Entry entry = RECYCLER.get();
+            Entry entry = RECYCLER.get();   //从池里获取一个entry
             entry.chunk = chunk;
             entry.nioBuffer = nioBuffer;
             entry.handle = handle;
