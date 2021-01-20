@@ -52,10 +52,10 @@ public class TransportModel implements Serializable {
         int length = buf.readInt();//4
         byte[] datas = new byte[length];
         buf.readBytes(datas);
-        transportModel.transportId = transportId;
-        transportModel.transportType = transportType;
-        transportModel.dataType = dataType;
-        transportModel.datas = datas;
+        this.transportId = transportId;
+        this.transportType = transportType;
+        this.dataType = dataType;
+        this.datas = datas;
         return transportModel;
     }
 
