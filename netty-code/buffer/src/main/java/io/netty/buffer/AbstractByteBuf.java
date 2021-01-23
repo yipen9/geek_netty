@@ -1084,7 +1084,7 @@ public abstract class AbstractByteBuf extends ByteBuf {
     }
 
     @Override
-    public ByteBuf writeBytes(byte[] src, int srcIndex, int length) {
+    public ByteBuf writeBytes(byte[] src, int srcIndex, int length) {   //写入writeBytes
         ensureWritable(length);
         setBytes(writerIndex, src, srcIndex, length);
         writerIndex += length;
@@ -1142,7 +1142,7 @@ public abstract class AbstractByteBuf extends ByteBuf {
     }
 
     @Override
-    public int writeBytes(ScatteringByteChannel in, int length) throws IOException {
+    public int writeBytes(ScatteringByteChannel in, int length) throws IOException {//从channel中读取bytes，写入长度length
         ensureWritable(length);
         //-1 代表 EOF，正常关闭， IO Exception代表读数据时被关闭
         int writtenBytes = setBytes(writerIndex, in, length);

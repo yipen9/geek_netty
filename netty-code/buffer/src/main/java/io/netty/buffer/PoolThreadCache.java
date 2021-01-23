@@ -183,13 +183,15 @@ final class PoolThreadCache {
         return allocate(cacheForNormal(area, normCapacity), buf, reqCapacity);
     }
 
+
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private boolean allocate(MemoryRegionCache<?> cache, PooledByteBuf buf, int reqCapacity) {
         if (cache == null) {
             // no cache found so just return false here
             return false;
         }
-        boolean allocated = cache.allocate(buf, reqCapacity);
+        boolean allocated = cache.allocate(buf, reqCapacity);   //从MemoryRegionCache中申请内存
+        // 这里是如果当前PoolThreadCache中申请内存的次数达到了8192次，则对内存块进行一次trim()操作，
         if (++ allocations >= freeSweepAllocationThreshold) {//已分配次数是否大于清除次数阈值
             allocations = 0;
             trim();
@@ -204,10 +206,12 @@ final class PoolThreadCache {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     boolean add(PoolArena<?> area, PoolChunk chunk, ByteBuffer nioBuffer,
                 long handle, int normCapacity, SizeClass sizeClass) {
+        // 通过当前释放的内存块的大小计算其应该放到哪个等级的MemoryRegionCache中
         MemoryRegionCache<?> cache = cache(area, normCapacity, sizeClass);
         if (cache == null) {
             return false;
         }
+        // 将内存块释放到目标MemoryRegionCache中
         return cache.add(chunk, nioBuffer, handle);
     }
 
@@ -372,7 +376,7 @@ final class PoolThreadCache {
     private abstract static class MemoryRegionCache<T> {
         private final int size; //缓存的个数
         private final Queue<Entry<T>> queue;    //实体队列
-        private final SizeClass sizeClass;  /**{@link PooledByteBufAllocator#DEFAULT_TINY_CACHE_SIZE}*/
+        private final SizeClass sizeClass;  //{@link PooledByteBufAllocator#DEFAULT_TINY_CACHE_SIZE}
         private int allocations;    //已经分配个数，后面释放会使用
 
         MemoryRegionCache(int size, SizeClass sizeClass) {
@@ -389,11 +393,14 @@ final class PoolThreadCache {
 
         /**
          * Add to cache if not already full.
+         *
          */
         @SuppressWarnings("unchecked")
         public final boolean add(PoolChunk<T> chunk, ByteBuffer nioBuffer, long handle) {
+            // 这里会尝试从缓存中获取一个Entry对象，如果没获取到则创建一个
             Entry<T> entry = newEntry(chunk, nioBuffer, handle);
             boolean queued = queue.offer(entry);
+            // 将实例化的Entry对象放到队列里
             if (!queued) {
                 // If it was not possible to cache the chunk, immediately recycle the entry
                 entry.recycle();    //如果不成功，立刻回收这个entry
@@ -404,14 +411,16 @@ final class PoolThreadCache {
 
         /**
          * Allocate something out of the cache if possible and remove the entry from the cache.
+         * 从MemoryRegionCache中申请内存，本质上就是从其队列中申请，如果存在，则初始化申请到的内存块
          */
         public final boolean allocate(PooledByteBuf<T> buf, int reqCapacity) {
             Entry<T> entry = queue.poll();  //从队列取出实体Entry，然后进行initBuf
             if (entry == null) {
                 return false;
             }
+
             initBuf(entry.chunk, entry.nioBuffer, entry.handle, buf, reqCapacity);
-            entry.recycle();    //回收实体
+            entry.recycle();      // 对entry对象进行循环利用
 
             // allocations is not thread-safe which is fine as this is only called from the same thread all time.
             ++ allocations; //已分配出去的+1
@@ -427,6 +436,7 @@ final class PoolThreadCache {
 
         private int free(int max, boolean finalizer) {
             int numFreed = 0;
+            // 依次从队列中取出Entry数据，调用freeEntry()方法释放该Entry
             for (; numFreed < max; numFreed++) {
                 Entry<T> entry = queue.poll();
                 if (entry != null) {
@@ -443,10 +453,13 @@ final class PoolThreadCache {
          * Free up cached {@link PoolChunk}s if not allocated frequently enough.
          */
         public final void trim() {
+            // size表示当前MemoryRegionCache中队列的最大可存储容量，allocations表示当前MemoryRegionCache
+            // 的内存申请次数，size-allocations的含义就是判断当前申请的次数是否连队列的容量都没达到
             int free = size - allocations;
             allocations = 0;
 
             // We not even allocated all the number that are
+            //如果申请的次数连队列的容量都没达到，则释放该内存块
             if (free > 0) {
                 free(free, false);
             }
@@ -454,6 +467,7 @@ final class PoolThreadCache {
 
         @SuppressWarnings({ "unchecked", "rawtypes" })
         private  void freeEntry(Entry entry, boolean finalizer) {
+            // 通过当前Entry中保存的PoolChunk和handle等数据释放当前内存块
             PoolChunk chunk = entry.chunk;
             long handle = entry.handle;
             ByteBuffer nioBuffer = entry.nioBuffer;
