@@ -403,21 +403,21 @@ public class DefaultPromise<V> extends AbstractFuture<V> implements Promise<V> {
     }
 
     private void notifyListeners() {
-        EventExecutor executor = executor();
+        EventExecutor executor = executor();    //获取当前的执行者
         if (executor.inEventLoop()) {
             final InternalThreadLocalMap threadLocals = InternalThreadLocalMap.get();
             final int stackDepth = threadLocals.futureListenerStackDepth();
-            if (stackDepth < MAX_LISTENER_STACK_DEPTH) {
-                threadLocals.setFutureListenerStackDepth(stackDepth + 1);
+            if (stackDepth < MAX_LISTENER_STACK_DEPTH) {//监听器栈的最大深度
+                threadLocals.setFutureListenerStackDepth(stackDepth + 1);   //深度+1
                 try {
-                    notifyListenersNow();
+                    notifyListenersNow();   //立刻通知
                 } finally {
-                    threadLocals.setFutureListenerStackDepth(stackDepth);
+                    threadLocals.setFutureListenerStackDepth(stackDepth);   //通知完成后，深度设置回来
                 }
                 return;
             }
         }
-
+        //不是IO线程，提交个任务
         safeExecute(executor, new Runnable() {
             @Override
             public void run() {
@@ -463,24 +463,24 @@ public class DefaultPromise<V> extends AbstractFuture<V> implements Promise<V> {
             if (notifyingListeners || this.listeners == null) {
                 return;
             }
-            notifyingListeners = true;
+            notifyingListeners = true;  //设置为正在通知
             listeners = this.listeners;
             this.listeners = null;
         }
-        for (;;) {
+        for (;;) {  //循环通知
             if (listeners instanceof DefaultFutureListeners) {
                 notifyListeners0((DefaultFutureListeners) listeners);
             } else {
                 notifyListener0(this, (GenericFutureListener<?>) listeners);
             }
             synchronized (this) {
-                if (this.listeners == null) {
+                if (this.listeners == null) {   //处理完了
                     // Nothing can throw from within this method, so setting notifyingListeners back to false does not
                     // need to be in a finally block.
-                    notifyingListeners = false;
+                    notifyingListeners = false; //设置通知处理完
                     return;
                 }
-                listeners = this.listeners;
+                listeners = this.listeners; //如果还有新加进来的，继续处理
                 this.listeners = null;
             }
         }
@@ -497,7 +497,7 @@ public class DefaultPromise<V> extends AbstractFuture<V> implements Promise<V> {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private static void notifyListener0(Future future, GenericFutureListener l) {
         try {
-            l.operationComplete(future);
+            l.operationComplete(future);    //执行之前注册listener的operationComplete
         } catch (Throwable t) {
             if (logger.isWarnEnabled()) {
                 logger.warn("An exception was thrown by " + l.getClass().getName() + ".operationComplete()", t);
@@ -544,6 +544,7 @@ public class DefaultPromise<V> extends AbstractFuture<V> implements Promise<V> {
 
     /**
      * Check if there are any waiters and if so notify these.
+     * 判断是否有等待者
      * @return {@code true} if there are any listeners attached to the promise, {@code false} otherwise.
      */
     private synchronized boolean checkNotifyWaiters() {

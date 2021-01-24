@@ -254,6 +254,7 @@ public final class ChannelOutboundBuffer {
      * Will remove the current message, mark its {@link ChannelPromise} as success and return {@code true}. If no
      * flushed message exists at the time this method is called it will return {@code false} to signal that no more
      * messages are ready to be handled.
+     * 将移除当前的消息，标记{@link ChannelPromise} 为 success 并且返回true
      */
     public boolean remove() {
         Entry e = flushedEntry;
