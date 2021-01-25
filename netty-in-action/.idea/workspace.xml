@@ -5,22 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="921c63bb-0fa8-413b-93e0-bef5418c4410" name="Default Changelist" comment="定义Decoder">
-      <change afterPath="$PROJECT_DIR$/../netty-code/example/src/main/java/io/netty/example/demo/PoolSubpageDemo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/netty-in-action.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../netty-research/.idea/netty-research.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../netty-code/buffer/src/main/java/io/netty/buffer/PoolChunk.java" beforeDir="false" afterPath="$PROJECT_DIR$/../netty-code/buffer/src/main/java/io/netty/buffer/PoolChunk.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../netty-code/buffer/src/main/java/io/netty/buffer/PoolSubpage.java" beforeDir="false" afterPath="$PROJECT_DIR$/../netty-code/buffer/src/main/java/io/netty/buffer/PoolSubpage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../netty-code/buffer/src/main/java/io/netty/buffer/PoolThreadCache.java" beforeDir="false" afterPath="$PROJECT_DIR$/../netty-code/buffer/src/main/java/io/netty/buffer/PoolThreadCache.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../netty-code/buffer/src/main/java/io/netty/buffer/PooledByteBuf.java" beforeDir="false" afterPath="$PROJECT_DIR$/../netty-code/buffer/src/main/java/io/netty/buffer/PooledByteBuf.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../netty-code/codec/src/main/java/io/netty/handler/codec/protobuf/ProtobufVarint32LengthFieldPrepender.java" beforeDir="false" afterPath="$PROJECT_DIR$/../netty-code/codec/src/main/java/io/netty/handler/codec/protobuf/ProtobufVarint32LengthFieldPrepender.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../netty-code/example/src/main/java/io/netty/example/demo/PoolThreadCacheDemo.java" beforeDir="false" afterPath="$PROJECT_DIR$/../netty-code/example/src/main/java/io/netty/example/demo/PoolThreadCacheDemo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../netty-code/common/src/main/java/io/netty/util/Recycler.java" beforeDir="false" afterPath="$PROJECT_DIR$/../netty-code/common/src/main/java/io/netty/util/Recycler.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/doc/Netty内存管理.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Netty内存管理.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../netty-research/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../netty-research/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../netty-research/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../netty-research/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../netty-research/src/main/java/io/netty/example/study/common/MessageHeader.java" beforeDir="false" afterPath="$PROJECT_DIR$/../netty-research/src/main/java/io/netty/example/study/common/MessageHeader.java" afterDir="false" />
     </list>
+    <ignored path="$PROJECT_DIR$/out/" />
+    <ignored path="$PROJECT_DIR$/target/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -42,6 +36,46 @@
   </component>
   <component name="DefaultGradleProjectSettings">
     <option name="isMigrated" value="true" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/rpc/codec/YiTcpEncoder.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="68">
+              <caret line="7" column="13" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/rpc/codec/YiTcpDecoder.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="366">
+              <caret line="40" column="28" selection-start-line="40" selection-start-column="28" selection-end-line="40" selection-end-column="28" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/doc/Netty内存管理.md">
+          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+            <state split_layout="SPLIT">
+              <first_editor relative-caret-position="85">
+                <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
+              </first_editor>
+              <second_editor />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -88,7 +122,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/main/java/com/yipeng/netty/common/KeepaliveOperationResult.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/yipeng/netty/common/KeepaliveOperation.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/yipeng/netty/common/OrderOperation.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/yipeng/netty/common/OrderOperationResult.java" />
@@ -139,6 +172,7 @@
         <option value="$PROJECT_DIR$/src/main/java/com/yipeng/testrpc/RpcClient.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/yipeng/rpc/codec/YiTcpDecoder.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/yipeng/testrpc/Dispatcher.java" />
+        <option value="$PROJECT_DIR$/doc/Netty内存管理.md" />
       </list>
     </option>
   </component>
@@ -182,10 +216,10 @@
     </treeState>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="216" />
-    <option name="y" value="252" />
-    <option name="width" value="1322" />
-    <option name="height" value="733" />
+    <option name="x" value="778" />
+    <option name="y" value="170" />
+    <option name="width" value="1263" />
+    <option name="height" value="785" />
   </component>
   <component name="ProjectId" id="1mpZlutQ6i77EE75yiFEKGokWA8" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -195,12 +229,18 @@
     </navigator>
     <panes>
       <pane id="PackagesPane" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
               <item name="netty-in-action" type="b2602c69:ProjectViewProjectNode" />
               <item name="netty-in-action" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="netty-in-action" type="b2602c69:ProjectViewProjectNode" />
+              <item name="netty-in-action" type="462c0819:PsiDirectoryNode" />
+              <item name="doc" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="netty-in-action" type="b2602c69:ProjectViewProjectNode" />
@@ -278,7 +318,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="ProjectViewState">
@@ -306,6 +345,18 @@
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="com.yipeng.netty" />
     </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
   </component>
   <component name="RunManager" selected="Application.RpcClient">
     <configuration name="NioDemo" type="Application" factoryName="Application" nameIsGenerated="true">
@@ -347,19 +398,6 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
-      <option name="arquillianRunConfiguration">
-        <value>
-          <option name="containerStateName" value="" />
-        </value>
-      </option>
-      <option name="TEST_OBJECT" value="CLASS" />
-      <properties />
-      <listeners />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <list>
       <item itemvalue="Application.NioDemo" />
       <item itemvalue="Application.RpcServer" />
@@ -372,7 +410,7 @@
       </list>
     </recent_temporary>
   </component>
-  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SpellCheckerSettings" BundledDictionaries="0" Folders="0" CustomDictionaries="0" Dictionaries="0" CorrectionsLimit="5" DefaultDictionary="application-level" UseSingleDictionary="true" />
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -401,6 +439,8 @@
       <workItem from="1610192650840" duration="1241000" />
       <workItem from="1610633594891" duration="2034000" />
       <workItem from="1610798781279" duration="1960000" />
+      <workItem from="1610971107874" duration="45000" />
+      <workItem from="1611576271533" duration="29000" />
     </task>
     <task id="LOCAL-00001" summary="定义Decoder">
       <created>1606998451732</created>
@@ -469,7 +509,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="100643000" />
+    <option name="totallyTimeSpent" value="100717000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -484,7 +524,7 @@
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" weight="0.19402985" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.19616205" />
       <window_info id="Designer" order="1" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Capture Tool" order="3" />
@@ -555,7 +595,7 @@
     </layout-to-restore>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="3" />
+    <option name="version" value="1" />
   </component>
   <component name="Vcs.Log.History.Properties">
     <option name="COLUMN_ORDER">
@@ -574,6 +614,12 @@
           <value>
             <State>
               <option name="SHOW_ONLY_AFFECTED_CHANGES" value="true" />
+              <option name="RECENTLY_FILTERED_USER_GROUPS">
+                <collection />
+              </option>
+              <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+                <collection />
+              </option>
               <option name="FILTERS">
                 <map>
                   <entry key="branch">
@@ -597,14 +643,16 @@
         </entry>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="RECENTLY_FILTERED_USER_GROUPS">
+                <collection />
+              </option>
+              <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+                <collection />
+              </option>
+            </State>
           </value>
         </entry>
-      </map>
-    </option>
-    <option name="OPEN_GENERIC_TABS">
-      <map>
-        <entry key="1" value="TOOL_WINDOW" />
       </map>
     </option>
     <option name="RECENT_FILTERS">
@@ -621,7 +669,6 @@
         </entry>
       </map>
     </option>
-    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="netty demo" />
@@ -639,11 +686,13 @@
         <line-breakpoint enabled="true" type="java-line">
           <url>jar://D:/Dev_Tools/apache-maven-3.6.1/respository/io/netty/netty-all/4.1.39.Final/netty-all-4.1.39.Final.jar!/io/netty/util/internal/logging/InternalLoggerFactory.class</url>
           <line>24</line>
+          <properties />
           <option name="timeStamp" value="10" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/yipeng/netty/client/codec/OrderProtocolDecoder.java</url>
           <line>14</line>
+          <properties />
           <option name="timeStamp" value="38" />
         </line-breakpoint>
       </breakpoints>
@@ -689,13 +738,6 @@
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://D:/Dev_Tools/java/jdk1.8.0_211/src.zip!/java/util/concurrent/atomic/AtomicBoolean.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1020">
-          <caret line="97" column="25" selection-start-line="97" selection-start-column="25" selection-end-line="97" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://D:/Dev_Tools/apache-maven-3.6.1/respository/io/netty/netty-all/4.1.40.Final/netty-all-4.1.40.Final-sources.jar!/io/netty/channel/ChannelInitializer.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="219">
@@ -770,24 +812,8 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/rpc/handler/Handler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="5" column="46" selection-start-line="5" selection-start-column="46" selection-end-line="5" selection-end-column="46" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/rpc/handler/LogHandler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="8" column="39" selection-start-line="8" selection-start-column="39" selection-end-line="8" selection-end-column="39" />
-          <folding>
-            <element signature="e#180#181#0" expanded="true" />
-            <element signature="e#226#227#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/rpc/handler/Handler.java" />
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/rpc/handler/LogHandler.java" />
     <entry file="jar://D:/Dev_Tools/apache-maven-3.6.1/respository/io/netty/netty-all/4.1.40.Final/netty-all-4.1.40.Final-sources.jar!/io/netty/channel/nio/NioEventLoop.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="204">
@@ -951,74 +977,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/rpc/handler/RpcClientHandler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/rpc/model/RPCMessage.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="517">
-          <caret line="46" column="16" selection-start-line="46" selection-start-column="16" selection-end-line="46" selection-end-column="16" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#419#420#0" expanded="true" />
-            <element signature="e#453#454#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/rpc/Dispatcher.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
-          <caret line="23" column="53" lean-forward="true" selection-start-line="23" selection-start-column="53" selection-end-line="23" selection-end-column="53" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/rpc/RpcServer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="294">
-          <caret line="24" column="47" selection-start-line="24" selection-start-column="47" selection-end-line="24" selection-end-column="47" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#1716#1717#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/rpc/RpcClient.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="580">
-          <caret line="37" column="59" lean-forward="true" selection-start-line="37" selection-start-column="59" selection-end-line="37" selection-end-column="59" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#1244#1778#0" expanded="true" />
-            <element signature="e#1777#1778#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/rpc/model/LogMessage.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="17" column="50" selection-start-line="17" selection-start-column="50" selection-end-line="17" selection-end-column="50" />
-          <folding>
-            <element signature="e#148#149#0" expanded="true" />
-            <element signature="e#182#183#0" expanded="true" />
-            <element signature="e#352#353#0" expanded="true" />
-            <element signature="e#396#397#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/rpc/handler/RpcClientHandler.java" />
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/rpc/model/RPCMessage.java" />
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/rpc/Dispatcher.java" />
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/rpc/RpcServer.java" />
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/rpc/RpcClient.java" />
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/rpc/model/LogMessage.java" />
     <entry file="jar://D:/Dev_Tools/apache-maven-3.6.1/respository/io/netty/netty-all/4.1.40.Final/netty-all-4.1.40.Final-sources.jar!/io/netty/handler/codec/LengthFieldBasedFrameDecoder.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="3052">
@@ -1026,58 +990,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/rpc/codec/RPCFrameDeCoder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="6" column="11" selection-start-line="6" selection-start-column="11" selection-end-line="6" selection-end-column="11" />
-          <folding>
-            <element signature="e#189#190#0" expanded="true" />
-            <element signature="e#241#242#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/rpc/codec/RPCFrameEncoder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
-          <folding>
-            <element signature="e#173#174#0" expanded="true" />
-            <element signature="e#204#205#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/rpc/codec/RPCProtocolDecoder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="22" column="26" selection-start-line="22" selection-start-column="26" selection-end-line="22" selection-end-column="26" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/rpc/codec/RPCProtocolEncoder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="17" column="1" lean-forward="true" selection-start-line="17" selection-start-column="1" selection-end-line="17" selection-end-column="1" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/rpc/codec/YiTcpEncoder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="7" column="13" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/rpc/codec/RPCFrameDeCoder.java" />
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/rpc/codec/RPCFrameEncoder.java" />
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/rpc/codec/RPCProtocolDecoder.java" />
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/rpc/codec/RPCProtocolEncoder.java" />
     <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/rpc/model/YiData.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="136">
@@ -1133,16 +1049,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/rpc/codec/YiTcpDecoder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="138">
-          <caret line="28" column="28" selection-start-line="28" selection-start-column="19" selection-end-line="28" selection-end-column="28" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/testrpc/RpcClient.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="136">
@@ -1161,6 +1067,36 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="272">
           <caret line="25" column="4" lean-forward="true" selection-start-line="25" selection-start-column="4" selection-end-line="25" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/rpc/codec/YiTcpEncoder.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="7" column="13" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/rpc/codec/YiTcpDecoder.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="366">
+          <caret line="40" column="28" selection-start-line="40" selection-start-column="28" selection-end-line="40" selection-end-column="28" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/doc/Netty内存管理.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="85">
+            <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
+          </first_editor>
+          <second_editor />
         </state>
       </provider>
     </entry>
