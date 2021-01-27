@@ -20,7 +20,7 @@ public class RpcClientHandler extends ChannelDuplexHandler {
             if (response.getRequestId() == ((TransportModel) msg).getTransportId()) {
                 response.setMessage(new String(((TransportModel) msg).getDatas()));
             }
-            rpcFuture.run();
+            ctx.executor().submit(rpcFuture);
         }
     }
 

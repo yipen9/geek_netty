@@ -24,11 +24,11 @@ import io.netty.util.internal.ReferenceCountUpdater;
  * Abstract base class for {@link ByteBuf} implementations that count references.
  */
 public abstract class AbstractReferenceCountedByteBuf extends AbstractByteBuf {
-    private static final long REFCNT_FIELD_OFFSET =
+    private static final long REFCNT_FIELD_OFFSET = //refCnt属性的内存偏移地址
             ReferenceCountUpdater.getUnsafeOffset(AbstractReferenceCountedByteBuf.class, "refCnt");
     private static final AtomicIntegerFieldUpdater<AbstractReferenceCountedByteBuf> AIF_UPDATER =
             AtomicIntegerFieldUpdater.newUpdater(AbstractReferenceCountedByteBuf.class, "refCnt");  //原子更新器
-
+    //引用更新器
     private static final ReferenceCountUpdater<AbstractReferenceCountedByteBuf> updater =
             new ReferenceCountUpdater<AbstractReferenceCountedByteBuf>() {
         @Override
@@ -57,7 +57,7 @@ public abstract class AbstractReferenceCountedByteBuf extends AbstractByteBuf {
     }
 
     @Override
-    public int refCnt() {
+    public int refCnt() {   //获取真实引用计数
         return updater.refCnt(this);
     }
 

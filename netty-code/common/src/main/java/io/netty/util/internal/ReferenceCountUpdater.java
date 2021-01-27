@@ -54,17 +54,19 @@ public abstract class ReferenceCountUpdater<T extends ReferenceCounted> {
     protected abstract AtomicIntegerFieldUpdater<T> updater();
 
     protected abstract long unsafeOffset();
-
+    //初始化默认为2
     public final int initialValue() {
         return 2;
     }
 
+    //获得真实计数 引用计数是奇数就返回0，说明已经释放了 偶数就无符号右移1 返回
     private static int realRefCnt(int rawCnt) {
         return rawCnt != 2 && rawCnt != 4 && (rawCnt & 1) != 0 ? 0 : rawCnt >>> 1;
     }
 
     /**
      * Like {@link #realRefCnt(int)} but throws if refCnt == 0
+     * 这个主要是在释放的时候内部用的，如果真实计数已经是0了，再释放就会报错，避免重复释放
      */
     private static int toLiveRealRefCnt(int rawCnt, int decrement) {
         if (rawCnt == 2 || rawCnt == 4 || (rawCnt & 1) == 0) {
@@ -74,6 +76,7 @@ public abstract class ReferenceCountUpdater<T extends ReferenceCounted> {
         throw new IllegalReferenceCountException(0, -decrement);
     }
 
+    //可以根据偏移量获得引用计数，不是真实的计数
     private int nonVolatileRawCnt(T instance) {
         // TODO: Once we compile against later versions of Java we can replace the Unsafe usage here by varhandles.
         final long offset = unsafeOffset();
@@ -84,6 +87,7 @@ public abstract class ReferenceCountUpdater<T extends ReferenceCounted> {
         return realRefCnt(updater().get(instance));
     }
 
+    //这个就是判断是否还存在引用，即内部的引用是否是偶数，是的话表示还有引用计数，返回true，不是就表示释放了，返回false，最后也是先判断是否相等来优化。
     public final boolean isLiveNonVolatile(T instance) {
         final long offset = unsafeOffset();
         final int rawCnt = offset != -1 ? PlatformDependent.getInt(instance, offset) : updater().get(instance);
@@ -94,22 +98,26 @@ public abstract class ReferenceCountUpdater<T extends ReferenceCounted> {
 
     /**
      * An unsafe operation that sets the reference count directly
+     * 直接设置真实引用计数
      */
     public final void setRefCnt(T instance, int refCnt) {
         updater().set(instance, refCnt > 0 ? refCnt << 1 : 1); // overflow OK here
     }
 
     /**
+     * //真实计数+1
      * Resets the reference count to 1
      */
     public final void resetRefCnt(T instance) {
         updater().set(instance, initialValue());
     }
 
+    ////真实计数+1，即引用计数+2
     public final T retain(T instance) {
         return retain0(instance, 1, 2);
     }
 
+    //真实计数+increment
     public final T retain(T instance, int increment) {
         // all changes to the raw count are 2x the "real" change - overflow is OK
         //所有的增加都是真实值的2倍
@@ -145,7 +153,7 @@ public abstract class ReferenceCountUpdater<T extends ReferenceCounted> {
         return decrement == realCnt ? tryFinalRelease0(instance, rawCnt) || retryRelease0(instance, decrement)
                 : nonFinalRelease0(instance, decrement, rawCnt, realCnt);
     }
-
+    //尝试最终释放 如果引用计数是2的话，就直接设为1，释放内存，否则就失败
     private boolean tryFinalRelease0(T instance, int expectRawCnt) {
         return updater().compareAndSet(instance, expectRawCnt, 1); // any odd number will work
     }

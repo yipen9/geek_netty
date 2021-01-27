@@ -11,6 +11,8 @@ public class PoolSubpageDemo {
         for (int i = 0; i < 100; i++) {
             byteBufs[i] = ByteBufAllocator.DEFAULT.heapBuffer(2);
         }
+
+        buf.release();
         ByteBuf lastone = ByteBufAllocator.DEFAULT.heapBuffer(2);
 
         lastone.release();

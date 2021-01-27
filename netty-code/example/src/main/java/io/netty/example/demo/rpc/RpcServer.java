@@ -23,6 +23,7 @@ public class RpcServer {
                 childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
+                        ch.pipeline().addLast(new LoggingHandler(LogLevel.INFO));
                         ch.pipeline().addLast(new TransportDecoder());
                         ch.pipeline().addLast(new TransportEncoder());
                         ch.pipeline().addLast(new RpcServerHandler());
