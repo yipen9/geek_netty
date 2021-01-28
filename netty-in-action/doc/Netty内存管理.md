@@ -5,3 +5,5 @@ https://blog.csdn.net/aa1215018028/article/details/108832233
 https://blog.csdn.net/mycs2012/article/details/90898128
 ###Recycler回收
 https://www.cnblogs.com/jackion5/p/11369705.html
+###内存泄漏检测
+https://www.jianshu.com/p/af5419b7dc0a

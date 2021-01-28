@@ -5,16 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="921c63bb-0fa8-413b-93e0-bef5418c4410" name="Default Changelist" comment="定义Decoder">
-      <change beforePath="$PROJECT_DIR$/../netty-code/common/src/main/java/io/netty/util/Recycler.java" beforeDir="false" afterPath="$PROJECT_DIR$/../netty-code/common/src/main/java/io/netty/util/Recycler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../netty-research/.idea/netty-research.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../netty-code/common/src/main/java/io/netty/util/ResourceLeakDetector.java" beforeDir="false" afterPath="$PROJECT_DIR$/../netty-code/common/src/main/java/io/netty/util/ResourceLeakDetector.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/doc/Netty内存管理.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Netty内存管理.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../netty-research/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../netty-research/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../netty-research/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../netty-research/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../netty-research/src/main/java/io/netty/example/study/common/MessageHeader.java" beforeDir="false" afterPath="$PROJECT_DIR$/../netty-research/src/main/java/io/netty/example/study/common/MessageHeader.java" afterDir="false" />
     </list>
-    <ignored path="$PROJECT_DIR$/out/" />
-    <ignored path="$PROJECT_DIR$/target/" />
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -36,46 +32,6 @@
   </component>
   <component name="DefaultGradleProjectSettings">
     <option name="isMigrated" value="true" />
-  </component>
-  <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/rpc/codec/YiTcpEncoder.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="68">
-              <caret line="7" column="13" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/yipeng/rpc/codec/YiTcpDecoder.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="366">
-              <caret line="40" column="28" selection-start-line="40" selection-start-column="28" selection-end-line="40" selection-end-column="28" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/doc/Netty内存管理.md">
-          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-            <state split_layout="SPLIT">
-              <first_editor relative-caret-position="85">
-                <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
-              </first_editor>
-              <second_editor />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -346,18 +302,6 @@
       <recent name="com.yipeng.netty" />
     </key>
   </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
-  </component>
   <component name="RunManager" selected="Application.RpcClient">
     <configuration name="NioDemo" type="Application" factoryName="Application" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.yipeng.file.nio.NioDemo" />
@@ -398,6 +342,19 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="TEST_OBJECT" value="CLASS" />
+      <properties />
+      <listeners />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <list>
       <item itemvalue="Application.NioDemo" />
       <item itemvalue="Application.RpcServer" />
@@ -410,7 +367,7 @@
       </list>
     </recent_temporary>
   </component>
-  <component name="SpellCheckerSettings" BundledDictionaries="0" Folders="0" CustomDictionaries="0" Dictionaries="0" CorrectionsLimit="5" DefaultDictionary="application-level" UseSingleDictionary="true" />
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="false" />
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -614,12 +571,6 @@
           <value>
             <State>
               <option name="SHOW_ONLY_AFFECTED_CHANGES" value="true" />
-              <option name="RECENTLY_FILTERED_USER_GROUPS">
-                <collection />
-              </option>
-              <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
-                <collection />
-              </option>
               <option name="FILTERS">
                 <map>
                   <entry key="branch">
@@ -643,14 +594,7 @@
         </entry>
         <entry key="MAIN">
           <value>
-            <State>
-              <option name="RECENTLY_FILTERED_USER_GROUPS">
-                <collection />
-              </option>
-              <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
-                <collection />
-              </option>
-            </State>
+            <State />
           </value>
         </entry>
       </map>
@@ -669,6 +613,7 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="netty demo" />
@@ -686,13 +631,11 @@
         <line-breakpoint enabled="true" type="java-line">
           <url>jar://D:/Dev_Tools/apache-maven-3.6.1/respository/io/netty/netty-all/4.1.39.Final/netty-all-4.1.39.Final.jar!/io/netty/util/internal/logging/InternalLoggerFactory.class</url>
           <line>24</line>
-          <properties />
           <option name="timeStamp" value="10" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/yipeng/netty/client/codec/OrderProtocolDecoder.java</url>
           <line>14</line>
-          <properties />
           <option name="timeStamp" value="38" />
         </line-breakpoint>
       </breakpoints>
