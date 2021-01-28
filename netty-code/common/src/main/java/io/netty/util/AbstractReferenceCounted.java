@@ -83,7 +83,7 @@ public abstract class AbstractReferenceCounted implements ReferenceCounted {
 
     private boolean handleRelease(boolean result) {
         if (result) {
-            deallocate();
+            deallocate();   //回收
         }
         return result;
     }

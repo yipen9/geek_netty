@@ -1,4 +1,4 @@
-package io.netty.example.learn;
+package io.netty.example.demo.bytebuf;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;

@@ -141,6 +141,11 @@ public abstract class ReferenceCountUpdater<T extends ReferenceCounted> {
         return instance;
     }
 
+    /**
+     * 判断是否没有引用需要回收
+     * @param instance
+     * @return
+     */
     public final boolean release(T instance) {
         int rawCnt = nonVolatileRawCnt(instance);
         return rawCnt == 2 ? tryFinalRelease0(instance, 2) || retryRelease0(instance, 1)
