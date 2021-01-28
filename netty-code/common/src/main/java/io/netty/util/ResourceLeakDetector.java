@@ -515,8 +515,18 @@ public class ResourceLeakDetector<T> {
             }
         }
 
+        /**
+         * 判断是否存在泄漏的关键
+         * @return false 代表已经正确close
+         *         true 代表并未正确close
+         */
         boolean dispose() {
+            // 清理对资源对象的引用
             clear();
+            // 直接使用allLeaks.remove(this) 的结果来
+            // 如果remove成功就说明之前close没有调用成功
+            // 也就说明了这个监控对象并没有调用足够的release来完成资源释放
+            // 如果remove失败说明之前已经完成了close的调用，一切正常
             return allLeaks.remove(this);
         }
 
@@ -539,6 +549,11 @@ public class ResourceLeakDetector<T> {
             // 说明自己已经被去除了，可能是重复close，或者是存在泄露，返回关闭失败
             return false;
         }
+
+
+//        一般来说外部调用的都是带参数的close方法
+//        在close方法的finally块中调用了reachabilityFence方法，保证close调用结束之前JVM都不会对资源对象进行GC，否则就会造成泄漏的误判或者逻辑错误
+//                关闭是否成功或者是否存在泄露的关键点就是allLeaks集合中是否还存在this
 
         @Override
         public boolean close(T trackedObject) {
@@ -581,6 +596,19 @@ public class ResourceLeakDetector<T> {
          *
          * @param ref the reference. If {@code null}, this method has no effect.
          * @see java.lang.ref.Reference#reachabilityFence
+         */
+
+        /**
+         * 这个方法看上去很莫名，只在跟踪对象上调用了一个空synchronized块
+         * 这里其实引申出来一个很奇葩的问题，就是JVM GC有可能会在一个对象的方法正在执行的时候
+         * 就判定这个对象已经不可达，并把它给回收了，具体可以看这个帖子
+         * https://stackoverflow.com/questions/26642153/finalize-called-on-strongly-reachable-object-in-java-8
+         * 针对这个问题，Java 9 提供了Reference.reachabilityFence这个方法作为解决方案
+         * 出于兼容性考虑，这里实现了一个netty版本的reachabilityFence方法，在ref上调用了空synchronized块
+         * 来保证在这个方法调用前，JVM是不会对这个对象进行GC，(synchronized保证了不会出现指令重排)
+         * 当然引入synchronized块就有可能会引入死锁，这个需要调用者来避免这个事情
+         * 还有一个注意的就是这个方法一定要在finally块中使用，保证这个方法的调用会在整个流程的最后，从而保证GC不会执行
+         * @param ref
          */
         private static void reachabilityFence0(Object ref) {
             if (ref != null) {
@@ -711,6 +739,7 @@ public class ResourceLeakDetector<T> {
             // Append the stack trace.
             StackTraceElement[] array = getStackTrace();
             // Skip the first three elements.
+            // 跳过最开始的三个栈元素，因为它们就是record方法的那些栈信息，没必要显示了
             out: for (int i = 3; i < array.length; i++) {
                 StackTraceElement element = array[i];
                 // Strip the noisy stack trace elements.
