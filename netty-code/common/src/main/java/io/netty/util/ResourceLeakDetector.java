@@ -39,6 +39,10 @@ import static io.netty.util.internal.StringUtil.EMPTY_STRING;
 import static io.netty.util.internal.StringUtil.NEWLINE;
 import static io.netty.util.internal.StringUtil.simpleClassName;
 
+/**
+ * 创建一个ResourceLeakTracker示例来跟踪一个池化资源，它需要在这个资源被释放的时候调用close方法
+ * @param <T>
+ */
 public class ResourceLeakDetector<T> {
 
     private static final String PROP_LEVEL_OLD = "io.netty.leakDetectionLevel";
@@ -254,23 +258,32 @@ public class ResourceLeakDetector<T> {
     @SuppressWarnings("unchecked")
     private DefaultResourceLeak track0(T obj) {
         Level level = ResourceLeakDetector.level;
+        // 如果跟踪登记是Disable，直接返回null
         if (level == Level.DISABLED) {
             return null;
         }
-
+        // 如果等级小于Paranoid
         if (level.ordinal() < Level.PARANOID.ordinal()) {
             //不是每次都tracking
+            // 如果这次随机触发了采样间隔
+            // 就报告现有的泄漏
+            // 并返回一个DefaultResourceLeak示例来跟踪当前资源
+            // 注意为了性能，这里使用了ThreadLocalRandom
             if ((PlatformDependent.threadLocalRandom().nextInt(samplingInterval)) == 0) {
                 reportLeak();
                 return new DefaultResourceLeak(obj, refQueue, allLeaks);
             }
+            // 否则如果没触发采样间隔
+            // 则直接返回null 表示不用跟踪这次资源
             return null;
         }
+        // 走到这里说明每次资源创建都需要跟踪
         reportLeak();
         return new DefaultResourceLeak(obj, refQueue, allLeaks);
     }
 
     private void clearRefQueue() {
+        //轮询清空
         for (;;) {
             @SuppressWarnings("unchecked")
             DefaultResourceLeak ref = (DefaultResourceLeak) refQueue.poll();
@@ -282,12 +295,15 @@ public class ResourceLeakDetector<T> {
     }
 
     private void reportLeak() {
+        // 如果没有启用error日志
+        // 仅仅清空当前ReferenceQueue即可
         if (!logger.isErrorEnabled()) {
             clearRefQueue();
             return;
         }
 
         // Detect and report previous leaks.
+        //// 检查和报告之前所有的泄漏
         for (;;) {
             @SuppressWarnings("unchecked")
             DefaultResourceLeak ref = (DefaultResourceLeak) refQueue.poll();
@@ -296,15 +312,24 @@ public class ResourceLeakDetector<T> {
             }
 
             //判断有没有泄露的关键
+            // 如果这个DefaultResourceLeak对象的dispose方法返回false
+            // 说明它所跟踪监控的资源已经被正确释放，不存在泄露
             if (!ref.dispose()) {
                 continue;
             }
-
+            // 到这里说明已经产生泄露了
+            // 获取这个泄露的相关记录的字符串
             String records = ref.toString();
+            // 看看这个泄漏有没有出现过
             if (reportedLeaks.putIfAbsent(records, Boolean.TRUE) == null) {
                 if (records.isEmpty()) {
+                    // 如果字符串为空说明没有任何记录
+                    // 就需要报告为untracked的泄漏
+                    // 这个方法就直接记录日志，没什么可看的
                     reportUntracedLeak(resourceType);
                 } else {
+                    // 否则就是报告为tracked的泄漏
+                    // 这个方法就直接记录日志就好，没什么可看的
                     reportTracedLeak(resourceType, records);
                 }
             }
@@ -342,6 +367,11 @@ public class ResourceLeakDetector<T> {
     protected void reportInstancesLeak(String resourceType) {
     }
 
+    /**
+     * WeakReference在弱引用对象所引用的真实对象被回收后，
+     * 会把弱引用对象，也就是WeakReference对象或者其子类的对象，放入队列ReferenceQueue中
+     * @param <T>
+     */
     @SuppressWarnings("deprecation")
     private static final class DefaultResourceLeak<T>
             extends WeakReference<Object> implements ResourceLeakTracker<T>, ResourceLeak {
@@ -364,10 +394,13 @@ public class ResourceLeakDetector<T> {
         private final Set<DefaultResourceLeak<?>> allLeaks;
         private final int trackedHash;
 
+        //对象是否在GC之前已经完成了release操作放在了DefaultResourceLeak里面，而通知就依赖于创建DefaultResourceLeak时传入的ReferenceQueue
         DefaultResourceLeak(
                 Object referent,
                 ReferenceQueue<Object> refQueue,
                 Set<DefaultResourceLeak<?>> allLeaks) {
+            // 调用WeakReference的调用方法
+            // 注意传入了ReferenceQueue， 完成GC的通知
             super(referent, refQueue);
 
             assert referent != null;
@@ -375,13 +408,23 @@ public class ResourceLeakDetector<T> {
             // Store the hash of the tracked object to later assert it in the close(...) method.
             // It's important that we not store a reference to the referent as this would disallow it from
             // be collected via the WeakReference.
+            // 这里生成了我们引用指向的资源的hashCode
+            // 注意这里我们存储了hashCode而非资源对象本身
+            // 因为如果存储资源对象本身的话我们就形成了强引用，导致资源不可能被GC
             trackedHash = System.identityHashCode(referent);
+            // 将当前的DefaultResourceLeak示例加入到allLeaks集合里面
+            // 这个集合是由它跟踪的资源所属的ResourceLeakDetector管理
+            // 这个集合在后面判断资源是否正确释放扮演重要角色
             allLeaks.add(this);
             // Create a new Record so we always have the creation stacktrace included.
+            // 初始化设置当前DefaultResourceLeak所关联的record
             headUpdater.set(this, new Record(Record.BOTTOM));
             this.allLeaks = allLeaks;
         }
 
+        /**
+         * 单纯记录一个调用点，没有任何额外提示信息
+         */
         @Override
         public void record() {
             record0(null);
@@ -417,28 +460,53 @@ public class ResourceLeakDetector<T> {
          * away. High contention only happens when there are very few existing records, which is only likely when the
          * object isn't shared! If this is a problem, the loop can be aborted and the record dropped, because another
          * thread won the race.
+         *
+         */
+
+        /**
+         * 这个函数非常有意思
+         * 有一个预设的TARGET_RECORDS字段
+         * 这里有个问题，如果这个资源会在很多地方被记录，
+         * 那么这个跟踪这个资源的DefaultResourceLeak的Record就会有很多
+         * 但并不是每个记录都需要被记录，否则就会对内存和运行都会造成压力
+         * 因为每个Record都会记录整个调用栈
+         * 因此需要对记录做取舍
+         * 这里有几个原则
+         * 1. 所有record都会用一根单向链表来保存
+         * 2. 最新的record永远都会被记录
+         * 3. 小于TARGET_RECORDS数目的record也会被记录
+         * 4. 当数目大于等于TARGET_RECORDS的时候，就会根据概率选择是用最新的record替换掉
+         *    当前链表中头上的record(保证链表长度不会增加)，还是仅仅添加到头上的record之前
+         *    (也就是增加链表长度)，当链表长度越大时，替换的概率也越大
+         * @param hint
          */
         private void record0(Object hint) {
             // Check TARGET_RECORDS > 0 here to avoid similar check before remove from and add to lastRecords
+            // 如果TARGET_RECORDS小于等于0 表示不记录
             if (TARGET_RECORDS > 0) {
                 Record oldHead;
                 Record prevHead;
                 Record newHead;
                 boolean dropped;
                 do {
+                    // 如果链表头为null，说明已经close了
                     if ((prevHead = oldHead = headUpdater.get(this)) == null) {
                         // already closed.
                         return;
                     }
+                    // 获取当前链表长度
                     final int numElements = oldHead.pos + 1;
                     if (numElements >= TARGET_RECORDS) {
+                        // 获取是否替换的概率，先获取一个因子n
+                        // 这个n最多为30，最小为链表长度 - TARGET_RECORDS
                         final int backOffFactor = Math.min(numElements - TARGET_RECORDS, 30);
+                        // 这里有 1 / 2^n的概率来添加这个record而不丢弃原有的链表头record，也就是不替换
                         if (dropped = PlatformDependent.threadLocalRandom().nextInt(1 << backOffFactor) != 0) {
                             prevHead = oldHead.next;
                         }
                     } else {
                         dropped = false;
-                    }
+                    }//如果记录的hint不为null 就创建新的Record作为表头
                     newHead = hint != null ? new Record(prevHead, hint) : new Record(prevHead);
                 } while (!headUpdater.compareAndSet(this, oldHead, newHead));
                 if (dropped) {
@@ -452,25 +520,41 @@ public class ResourceLeakDetector<T> {
             return allLeaks.remove(this);
         }
 
+        //接下来我们来看看close方法，这个方法会在ByteBuf.release()将引用计数减为0的时候被调用，保
+        // 证DefaultResourceLeak监控对象正常关闭。
         @Override
         public boolean close() {
+            // 从allLeaks 集合中去除自己
+            // allLeaks中是否包含自己就作为是否正确release和GC的标准
             if (allLeaks.remove(this)) {
                 // Call clear so the reference is not even enqueued.
+                // 如果成功去除自己，说明是正常流程
+                // 清除掉对资源对象的引用
                 clear();
+                // 设置链表头record到null
                 headUpdater.set(this, null);
+                // 返回关闭成功
                 return true;
             }
+            // 说明自己已经被去除了，可能是重复close，或者是存在泄露，返回关闭失败
             return false;
         }
 
         @Override
         public boolean close(T trackedObject) {
             // Ensure that the object that was tracked is the same as the one that was passed to close(...).
+            // 保证释放和跟踪的是同一个对象
             assert trackedHash == System.identityHashCode(trackedObject);
 
             try {
+                // 调用真正close的逻辑
                 return close();
             } finally {
+                // 保证在这个方法调用之前跟踪的资源对象不会被GC
+                // 具体原因可参见这个方法的注释，这里只需要注意
+                // 如果在这个方法之前对象就被GC，就不能保证close是否正常
+                // 因为如果GC之后再close，就有可能导致泄漏的误判
+
                 // This method will do `synchronized(trackedObject)` and we should be sure this will not cause deadlock.
                 // It should not, because somewhere up the callstack should be a (successful) `trackedObject.release`,
                 // therefore it is unreasonable that anyone else, anywhere, is holding a lock on the trackedObject.
@@ -587,6 +671,7 @@ public class ResourceLeakDetector<T> {
         } while (!excludedMethods.compareAndSet(oldMethods, newMethods));
     }
 
+    //如果需要记录一个某个点的调用栈，我们就可以创建一个Throwable的子类，这样调用栈就自动保存好了，这也就是Record类需要继承Throwable的原因。
     private static final class Record extends Throwable {
         private static final long serialVersionUID = 6065153674892850720L;
 
