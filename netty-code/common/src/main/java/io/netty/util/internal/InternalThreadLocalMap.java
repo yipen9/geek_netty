@@ -47,6 +47,7 @@ public final class InternalThreadLocalMap extends UnpaddedInternalThreadLocalMap
     public static final Object UNSET = new Object();
 
     /**
+     * ftl:fastThreadlocal
      * 用于标识ftl变量是否注册了cleaner
      * BitSet简要原理：
      * BitSet默认底层数据结构是一个long[]数组，开始时长度为1，即只有long[0],而一个long有64bit。
