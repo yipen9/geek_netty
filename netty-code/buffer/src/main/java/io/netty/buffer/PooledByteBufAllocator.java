@@ -458,8 +458,8 @@ public class PooledByteBufAllocator extends AbstractByteBufAllocator implements 
 
         @Override
         protected synchronized PoolThreadCache initialValue() {
-            final PoolArena<byte[]> heapArena = leastUsedArena(heapArenas);
-            final PoolArena<ByteBuffer> directArena = leastUsedArena(directArenas);
+            final PoolArena<byte[]> heapArena = leastUsedArena(heapArenas);//线程最少使用的heapArena
+            final PoolArena<ByteBuffer> directArena = leastUsedArena(directArenas);//线程最少使用的directArena
 
             final Thread current = Thread.currentThread();
             //这里主要是useCacheForAllThreads 标签，是否是所有线程都可以用缓存，还是只能FastThreadLocalThread用缓存

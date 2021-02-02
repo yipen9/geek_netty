@@ -36,6 +36,11 @@ public abstract class AbstractByteBufAllocator implements ByteBufAllocator {
         ResourceLeakDetector.addExclusions(AbstractByteBufAllocator.class, "toLeakAwareBuffer");
     }
 
+    /**
+     * 增加内存泄漏检测包装
+     * @param buf
+     * @return
+     */
     protected static ByteBuf toLeakAwareBuffer(ByteBuf buf) {
         ResourceLeakTracker<ByteBuf> leak;
         switch (ResourceLeakDetector.getLevel()) {
@@ -58,6 +63,11 @@ public abstract class AbstractByteBufAllocator implements ByteBufAllocator {
         return buf;
     }
 
+    /**
+     * 组合内存泄漏检测包装
+     * @param buf
+     * @return
+     */
     protected static CompositeByteBuf toLeakAwareBuffer(CompositeByteBuf buf) {
         ResourceLeakTracker<ByteBuf> leak;
         switch (ResourceLeakDetector.getLevel()) {
@@ -103,7 +113,7 @@ public abstract class AbstractByteBufAllocator implements ByteBufAllocator {
 
     @Override
     public ByteBuf buffer() {
-        if (directByDefault) {
+        if (directByDefault) {  //是否默认direct
             return directBuffer();
         }
         return heapBuffer();

@@ -16,17 +16,18 @@ public class CacheLineEffect {
         //在访问一个long数组的时候，如果数组中的一个值被加载到缓存中，它会自动加载另外7个。
         // 因此你能非常快的遍历这个数组。事实上，你可以非常快速的遍历在连续内存块中分配的任意数据结构。
         long marked = System.currentTimeMillis();
-        for (int i = 0; i < 1024 * 1024; i+=1) {
-            for(int j =0; j< 8;j++){
-                sum = arr[i][j];
+        for (int i = 0; i < 8; i+=1) {
+            for(int j =0; j< 1024 * 1024;j++){
+                sum = arr[j][i];
             }
         }
 
         System.out.println("Loop times:" + (System.currentTimeMillis() - marked) + "ms");
         marked = System.currentTimeMillis();
-        for (int i = 0; i < 8; i+=1) {
-            for(int j =0; j< 1024 * 1024;j++){
-                sum = arr[j][i];
+
+        for (int i = 0; i < 1024 * 1024; i+=1) {
+            for(int j =0; j< 8;j++){
+                sum = arr[i][j];
             }
         }
         System.out.println("Loop times:" + (System.currentTimeMillis() - marked) + "ms");

@@ -26,9 +26,12 @@ import io.netty.util.internal.ReferenceCountUpdater;
 public abstract class AbstractReferenceCountedByteBuf extends AbstractByteBuf {
     private static final long REFCNT_FIELD_OFFSET = //refCnt属性的内存偏移地址
             ReferenceCountUpdater.getUnsafeOffset(AbstractReferenceCountedByteBuf.class, "refCnt");
+
     //AtomicIntegerFieldUpdater是JDK提供的一个可以通过原子更新的方式修改指定字段的工具
     private static final AtomicIntegerFieldUpdater<AbstractReferenceCountedByteBuf> AIF_UPDATER =
             AtomicIntegerFieldUpdater.newUpdater(AbstractReferenceCountedByteBuf.class, "refCnt");  //原子更新器
+
+
     //引用更新器
     private static final ReferenceCountUpdater<AbstractReferenceCountedByteBuf> updater =
             new ReferenceCountUpdater<AbstractReferenceCountedByteBuf>() {

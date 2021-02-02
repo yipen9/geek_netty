@@ -181,7 +181,7 @@ abstract class PooledByteBuf<T> extends AbstractReferenceCountedByteBuf {
         }
     }
 
-    private void recycle() {
+    private void recycle() {    //回收这个对象
         recyclerHandle.recycle(this);
     }
 
