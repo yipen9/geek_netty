@@ -169,7 +169,7 @@ abstract class PooledByteBuf<T> extends AbstractReferenceCountedByteBuf {
      * 其并不会直接将内存块返回给PoolArena。
      */
     @Override
-    protected final void deallocate() {
+    protected final void deallocate() { //如果引用为0，则属性重置为默认，并且调用recycle回收到对象池
         if (handle >= 0) {
             final long handle = this.handle;
             this.handle = -1;
