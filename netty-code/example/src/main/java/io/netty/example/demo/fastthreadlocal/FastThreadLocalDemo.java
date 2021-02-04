@@ -23,7 +23,6 @@ public class FastThreadLocalDemo {
             threads[i].start();
         }
 
-
     }
 }
 

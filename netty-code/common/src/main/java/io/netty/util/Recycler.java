@@ -116,7 +116,7 @@ public abstract class Recycler<T> {
      */
     private final FastThreadLocal<Stack<T>> threadLocal = new FastThreadLocal<Stack<T>>() {
         @Override
-        protected Stack<T> initialValue() {
+        protected Stack<T> initialValue() { //每个线程一个对应的stack
             return new Stack<T>(Recycler.this, Thread.currentThread(), maxCapacityPerThread, maxSharedCapacityFactor,
                     ratioMask, maxDelayedQueuesPerThread);
         }
@@ -311,7 +311,7 @@ public abstract class Recycler<T> {
             static boolean reserveSpace(AtomicInteger availableSharedCapacity, int space) {
                 assert space >= 0;
                 for (;;) {
-                    int available = availableSharedCapacity.get();
+                    int available = availableSharedCapacity.get();  //共享可用容量
                     if (available < space) {
                         return false;
                     }
@@ -655,25 +655,26 @@ public abstract class Recycler<T> {
             // we don't want to have a ref to the queue as the value in our weak map
             // so we null it out; to ensure there are no races with restoring it later
             // we impose a memory ordering here (no-op on x86)
-            Map<Stack<?>, WeakOrderQueue> delayedRecycled = DELAYED_RECYCLED.get();
-            WeakOrderQueue queue = delayedRecycled.get(this);
-            if (queue == null) {
-                if (delayedRecycled.size() >= maxDelayedQueues) {
+            Map<Stack<?>, WeakOrderQueue> delayedRecycled = DELAYED_RECYCLED.get(); //获取到其他线程的delayedRecycled
+            WeakOrderQueue queue = delayedRecycled.get(this);   //获取这个Stack对应的WeakOrderQueue
+            if (queue == null) {//如果队列为null
+                if (delayedRecycled.size() >= maxDelayedQueues) {   //如果延迟队列超过了最大的限度
                     // Add a dummy queue so we know we should drop the object
-                    delayedRecycled.put(this, WeakOrderQueue.DUMMY);
+                    delayedRecycled.put(this, WeakOrderQueue.DUMMY);    //放入WeakOrderQueue.DUMMY
                     return;
                 }
                 // Check if we already reached the maximum number of delayed queues and if we can allocate at all.
+                //分配队列
                 if ((queue = WeakOrderQueue.allocate(this, thread)) == null) {
                     // drop object
                     return;
                 }
-                delayedRecycled.put(this, queue);
+                delayedRecycled.put(this, queue);   //将此stack，和对应的queue加入到delayedRecycled
             } else if (queue == WeakOrderQueue.DUMMY) {
                 // drop object
                 return;
             }
-
+            //item加入到queue
             queue.add(item);
         }
 
