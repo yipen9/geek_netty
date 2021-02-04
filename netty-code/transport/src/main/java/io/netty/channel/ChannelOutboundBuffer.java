@@ -403,7 +403,7 @@ public final class ChannelOutboundBuffer {
      *                 value maybe exceeded because we make a best effort to include at least 1 {@link ByteBuffer}
      *                 in the return value to ensure write progress is made.
      */
-    public ByteBuffer[] nioBuffers(int maxCount, long maxBytes) {
+    public ByteBuffer[] nioBuffers(int maxCount, long maxBytes) {   //遍历刷新的flushedEntry
         assert maxCount > 0;
         assert maxBytes > 0;
         long nioBufferSize = 0;
@@ -819,8 +819,8 @@ public final class ChannelOutboundBuffer {
         ByteBuffer buf;
         ChannelPromise promise;
         long progress;
-        long total;
-        int pendingSize;
+        long total;         //总共的数据大小
+        int pendingSize;    //待冲刷的评估大小，要加上96
         int count = -1;
         boolean cancelled;
 
@@ -829,7 +829,7 @@ public final class ChannelOutboundBuffer {
         }
 
         static Entry newInstance(Object msg, int size, long total, ChannelPromise promise) {
-            Entry entry = RECYCLER.get();
+            Entry entry = RECYCLER.get();   //从对象池中获取
             entry.msg = msg;
             entry.pendingSize = size + CHANNEL_OUTBOUND_BUFFER_ENTRY_OVERHEAD;
             entry.total = total;
