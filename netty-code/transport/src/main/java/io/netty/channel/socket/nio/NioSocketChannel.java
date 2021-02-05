@@ -356,7 +356,7 @@ public class NioSocketChannel extends AbstractNioByteChannel implements io.netty
     @Override
     protected long doWriteFileRegion(FileRegion region) throws Exception {
         final long position = region.transferred();
-        return region.transferTo(javaChannel(), position);
+        return region.transferTo(javaChannel(), position);  //直接使用零拷贝
     }
 
     private void adjustMaxBytesPerGatheringWrite(int attempted, int written, int oldMaxBytesPerGatheringWrite) {
