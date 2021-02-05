@@ -29,6 +29,7 @@ import java.util.Arrays;
  * Creates a new {@link ByteBuf} by allocating new space or by wrapping
  * or copying existing byte arrays, byte buffers and a string.
  *
+ * 创建一个新的ByteBuf，通过分配新的空间，或者封装，拷贝现有的字节数组，byte buffers或者字符串
  * <h3>Use static import</h3>
  * This classes is intended to be used with Java 5 static import statement:
  *
