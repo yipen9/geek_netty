@@ -7,3 +7,5 @@ https://blog.csdn.net/mycs2012/article/details/90898128
 https://www.cnblogs.com/jackion5/p/11369705.html
 ###内存泄漏检测
 https://www.jianshu.com/p/af5419b7dc0a
+###内存对齐
+https://blog.csdn.net/weixin_40853073/article/details/81451792
