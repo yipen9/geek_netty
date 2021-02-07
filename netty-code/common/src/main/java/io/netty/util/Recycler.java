@@ -340,10 +340,10 @@ public abstract class Recycler<T> {
 
             // Its important that we not store the Stack itself in the WeakOrderQueue as the Stack also is used in
             // the WeakHashMap as key. So just store the enclosed AtomicInteger which should allow to have the
-            // Stack itself GCed.
+            // Stack itself GCed.  使stack能自己gc
             head = new Head(stack.availableSharedCapacity);
             head.link = tail;
-            owner = new WeakReference<Thread>(thread);
+            owner = new WeakReference<Thread>(thread);  //设置owner为线程的弱引用
         }
 
         static WeakOrderQueue newQueue(Stack<?> stack, Thread thread) {

@@ -294,7 +294,7 @@ public class ResourceLeakDetector<T> {
         }
     }
 
-    private void reportLeak() {
+    private void reportLeak() { //报告泄漏
         // 如果没有启用error日志
         // 仅仅清空当前ReferenceQueue即可
         if (!logger.isErrorEnabled()) {
