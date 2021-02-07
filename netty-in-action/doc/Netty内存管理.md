@@ -12,3 +12,5 @@ https://zhuanlan.zhihu.com/p/83449008
 https://blog.csdn.net/weixin_40853073/article/details/81451792
 ###Reference和ReferenceQueue深入解读
 https://www.jianshu.com/p/439a8f738153
+https://zhuanlan.zhihu.com/p/29454205
+https://blog.csdn.net/upwind_fly/article/details/52795401
