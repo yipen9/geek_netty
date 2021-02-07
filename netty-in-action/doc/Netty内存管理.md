@@ -10,5 +10,5 @@ https://www.jianshu.com/p/af5419b7dc0a
 ###内存对齐
 https://zhuanlan.zhihu.com/p/83449008
 https://blog.csdn.net/weixin_40853073/article/details/81451792
-###Java四种应用方式
-https://www.cnblogs.com/huajiezh/p/5835618.html
+###Reference和ReferenceQueue深入解读
+https://www.jianshu.com/p/439a8f738153
