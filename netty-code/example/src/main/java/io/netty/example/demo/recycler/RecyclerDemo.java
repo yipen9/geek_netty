@@ -9,10 +9,13 @@ import io.netty.util.ResourceLeakTracker;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class RecyclerDemo {
+    /**
+     * 在get时，当前线程，会创建一个FastThreadLocal<Stack<T>>的stack
+     */
     Recycler<RefObj> recycler = new Recycler<RefObj>() {    //对象池
         @Override
         protected RefObj newObject(Handle<RefObj> handle) {
-            return new RefObj(handle);
+            return new RefObj(handle);          //创建一个实例时，当前线程
         }
     };
 
