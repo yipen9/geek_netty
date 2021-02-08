@@ -33,7 +33,7 @@ import java.nio.channels.GatheringByteChannel;
 import java.nio.channels.ScatteringByteChannel;
 import java.nio.charset.Charset;
 
-final class AdvancedLeakAwareByteBuf extends SimpleLeakAwareByteBuf {
+final class AdvancedLeakAwareByteBuf extends SimpleLeakAwareByteBuf {   //封装内存泄漏检查
 
     private static final String PROP_ACQUIRE_AND_RELEASE_ONLY = "io.netty.leakDetection.acquireAndReleaseOnly";
     private static final boolean ACQUIRE_AND_RELEASE_ONLY;
