@@ -70,11 +70,11 @@ class PromiseTask<V> extends DefaultPromise<V> implements RunnableFuture<V> {
     public void run() {
         try {
             if (setUncancellableInternal()) {
-                V result = task.call();
-                setSuccessInternal(result);
+                V result = task.call(); //执行task
+                setSuccessInternal(result); //成功设置result
             }
         } catch (Throwable e) {
-            setFailureInternal(e);
+            setFailureInternal(e);      //失败设置原因
         }
     }
 

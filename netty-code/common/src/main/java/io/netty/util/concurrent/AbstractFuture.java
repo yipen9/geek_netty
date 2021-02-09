@@ -33,7 +33,7 @@ public abstract class AbstractFuture<V> implements Future<V> {
 
         Throwable cause = cause();
         if (cause == null) {
-            return getNow();
+            return getNow();    //如果没有完成，返回null
         }
         if (cause instanceof CancellationException) {
             throw (CancellationException) cause;
@@ -43,7 +43,7 @@ public abstract class AbstractFuture<V> implements Future<V> {
 
     @Override
     public V get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-        if (await(timeout, unit)) {
+        if (await(timeout, unit)) { //等待对应时间
             Throwable cause = cause();
             if (cause == null) {
                 return getNow();
