@@ -99,7 +99,7 @@ public abstract class SimpleChannelInboundHandler<I> extends ChannelInboundHandl
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         boolean release = true;
         try {
-            if (acceptInboundMessage(msg)) {
+            if (acceptInboundMessage(msg)) {    //判断是否接受的类型
                 @SuppressWarnings("unchecked")
                 I imsg = (I) msg;
                 channelRead0(ctx, imsg);
@@ -108,7 +108,7 @@ public abstract class SimpleChannelInboundHandler<I> extends ChannelInboundHandl
                 ctx.fireChannelRead(msg);
             }
         } finally {
-            if (autoRelease && release) {
+            if (autoRelease && release) {   //释放
                 ReferenceCountUtil.release(msg);
             }
         }
