@@ -409,7 +409,7 @@ public final class ChannelOutboundBuffer {
         long nioBufferSize = 0;
         int nioBufferCount = 0;
         final InternalThreadLocalMap threadLocalMap = InternalThreadLocalMap.get();
-        ByteBuffer[] nioBuffers = NIO_BUFFERS.get(threadLocalMap);
+        ByteBuffer[] nioBuffers = NIO_BUFFERS.get(threadLocalMap);  //FastThreadLocalh获取
         Entry entry = flushedEntry;
         while (isFlushedEntry(entry) && entry.msg instanceof ByteBuf) {
             if (!entry.cancelled) {

@@ -151,6 +151,10 @@ abstract class PooledByteBuf<T> extends AbstractReferenceCountedByteBuf {
         return PooledSlicedByteBuf.newInstance(this, this, index, length);
     }
 
+    /**
+     * 拷贝一个新对象，在新对象上修改不会影响前对象
+     * @return
+     */
     protected final ByteBuffer internalNioBuffer() {
         ByteBuffer tmpNioBuf = this.tmpNioBuf;
         if (tmpNioBuf == null) {

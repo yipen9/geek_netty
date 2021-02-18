@@ -34,6 +34,7 @@ import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
+import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.DefaultEventExecutor;
 import io.netty.util.concurrent.EventExecutorGroup;
 
@@ -83,7 +84,8 @@ public final class EchoServer {
                          p.addLast(sslCtx.newHandler(ch.alloc()));
                      }
                      p.addLast(defaultEventExecutor, new LoggingHandler(LogLevel.INFO));
-//                     p.addLast(new LoggingHandler(LogLevel.INFO));
+                     p.addLast(new LoggingHandler(LogLevel.INFO));
+                     p.addLast(new IdleStateHandler(10, 10, 120));
                      p.addLast(serverHandler);
                  }
              });
