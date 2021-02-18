@@ -376,7 +376,7 @@ final class PoolThreadCache {
     private abstract static class MemoryRegionCache<T> {
         private final int size; //缓存的个数
         private final Queue<Entry<T>> queue;    //实体队列
-        private final SizeClass sizeClass;  //{@link PooledByteBufAllocator#DEFAULT_TINY_CACHE_SIZE}
+        private final SizeClass sizeClass;  /** {@link PooledByteBufAllocator#DEFAULT_TINY_CACHE_SIZE} */
         private int allocations;    //已经分配个数，后面释放会使用
 
         MemoryRegionCache(int size, SizeClass sizeClass) {
