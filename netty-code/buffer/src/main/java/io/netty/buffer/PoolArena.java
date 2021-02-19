@@ -259,6 +259,7 @@ abstract class PoolArena<T> implements PoolArenaMetric {
     // Method must be called inside synchronized(this) { ... } block
     //首先会根据顺序q050，q025，q000，qInit，q075的顺序进行内存申请
     private void allocateNormal(PooledByteBuf<T> buf, int reqCapacity, int normCapacity) {
+        //PoolChunk往nextList后移 对应q000,q025等head就会实例化
         if (q050.allocate(buf, reqCapacity, normCapacity) || q025.allocate(buf, reqCapacity, normCapacity) ||
             q000.allocate(buf, reqCapacity, normCapacity) || qInit.allocate(buf, reqCapacity, normCapacity) ||
             q075.allocate(buf, reqCapacity, normCapacity)) {
@@ -269,6 +270,7 @@ abstract class PoolArena<T> implements PoolArenaMetric {
         PoolChunk<T> c = newChunk(pageSize, maxOrder, pageShifts, chunkSize);
         boolean success = c.allocate(buf, reqCapacity, normCapacity);   //分配空间
         assert success;
+        //从qInit生成新的PoolChunk，PoolChunk满了后，就将PoolChunk往nextList后移
         qInit.add(c);   //加入到初始块列表里
     }
 
