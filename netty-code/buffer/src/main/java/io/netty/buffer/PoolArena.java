@@ -271,7 +271,7 @@ abstract class PoolArena<T> implements PoolArenaMetric {
         boolean success = c.allocate(buf, reqCapacity, normCapacity);   //分配空间
         assert success;
         //从qInit生成新的PoolChunk，PoolChunk满了后，就将PoolChunk往nextList后移
-        qInit.add(c);   //加入到初始块列表里
+        qInit.add(c);   //从qInit初始块列表开始添加
     }
 
     private void incTinySmallAllocation(boolean tiny) {

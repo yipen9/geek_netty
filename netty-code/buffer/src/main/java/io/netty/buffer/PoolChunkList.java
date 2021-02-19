@@ -132,8 +132,12 @@ final class PoolChunkList<T> implements PoolChunkListMetric {
         return prevList.move(chunk);
     }
 
+    /**
+     * 从递归：qInit -> q000 -> q025 -> q050 -> q075 -> q100
+     * @param chunk
+     */
     void add(PoolChunk<T> chunk) {
-        if (chunk.usage() >= maxUsage) {
+        if (chunk.usage() >= maxUsage) {    //如果超过自身到maxUsage，就往其nextList中添加
             nextList.add(chunk);
             return;
         }
@@ -144,12 +148,12 @@ final class PoolChunkList<T> implements PoolChunkListMetric {
      * Adds the {@link PoolChunk} to this {@link PoolChunkList}.
      */
     void add0(PoolChunk<T> chunk) {
-        chunk.parent = this;
-        if (head == null) {
+        chunk.parent = this;    //将此Chunk的parent设置到这个PoolChunkList
+        if (head == null) {     //如果这个head为空，则此chunk为head
             head = chunk;
             chunk.prev = null;
             chunk.next = null;
-        } else {
+        } else {        //新到作为头节点
             chunk.prev = null;
             chunk.next = head;
             head.prev = chunk;

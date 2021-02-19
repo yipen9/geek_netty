@@ -39,7 +39,32 @@ public class PoolArenaDemo {
 
     @Test
     public void testAllocateChunkSize() {
+        /**
+         * qInit , q000 , q025 , q050 ,  , q100
+         */
         ByteBuf byteBuf = PooledByteBufAllocator.DEFAULT.directBuffer(1024 * 1024 * 16 - 1);
+
+        byteBuf = PooledByteBufAllocator.DEFAULT.directBuffer(1024 * 1024 * 16 - 1);
+
+        byteBuf = PooledByteBufAllocator.DEFAULT.directBuffer(1024 * 1024 * 16 - 1);
+
+//      q025
+        byteBuf = PooledByteBufAllocator.DEFAULT.directBuffer(16609443 - 1);
+
+        byteBuf = PooledByteBufAllocator.DEFAULT.directBuffer(16609443- 1);
+
+
+//        q075
+        byteBuf = PooledByteBufAllocator.DEFAULT.directBuffer(4194304 - 1);
+
+        byteBuf = PooledByteBufAllocator.DEFAULT.directBuffer(4194304 - 1);
+
+//        q050
+        byteBuf = PooledByteBufAllocator.DEFAULT.directBuffer(8388608 - 1);
+
+        byteBuf = PooledByteBufAllocator.DEFAULT.directBuffer(8388608 - 1);
+
+
         System.out.println(byteBuf);
     }
 
