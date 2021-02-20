@@ -67,7 +67,7 @@ final class PoolSubpage<T> implements PoolSubpageMetric {
         if (elemSize != 0) {
             maxNumElems = numAvail = pageSize / elemSize;//获取能分割成多少elemSize大小的内存
             nextAvail = 0;
-            bitmapLength = maxNumElems >>> 6;//实际需要用的到的long类型的位图的个数，maxNumElems/64
+            bitmapLength = maxNumElems >>> 6;//实际需要用的到的long类型的位图的个数，maxNumElems/64,一个long长度64位
             if ((maxNumElems & 63) != 0) {//有余数就多一个
                 bitmapLength ++;
             }
@@ -93,10 +93,10 @@ final class PoolSubpage<T> implements PoolSubpageMetric {
         }
         //获取下一个可用的位图索引，不是位图数组
         final int bitmapIdx = getNextAvail();
-        int q = bitmapIdx >>> 6;    //获取bitmap的下标
-        int r = bitmapIdx & 63;
+        int q = bitmapIdx >>> 6;    //右移获取高位，获取bitmap的下标
+        int r = bitmapIdx & 63;     //获取低位，也就是bits中的位置
         assert (bitmap[q] >>> r & 1) == 0;
-        bitmap[q] |= 1L << r;
+        bitmap[q] |= 1L << r;       //将r位上的标识为1，表示已经使用
 
         if (-- numAvail == 0) {
             removeFromPool();
@@ -175,7 +175,7 @@ final class PoolSubpage<T> implements PoolSubpageMetric {
         final int bitmapLength = this.bitmapLength;
         for (int i = 0; i < bitmapLength; i ++) {
             long bits = bitmap[i];
-            if (~bits != 0) {   //说明这个long所描述的64个内存段还有未分配的；
+            if (~bits != 0) {   //如果全部分配完，bits为0xFFFFFFFFFFFFFFFF说明这个long所描述的64个内存段还有未分配的；
                 return findNextAvail0(i, bits);
             }
         }
@@ -184,7 +184,7 @@ final class PoolSubpage<T> implements PoolSubpageMetric {
 
     private int findNextAvail0(int i, long bits) {
         final int maxNumElems = this.maxNumElems;//最大可分配数
-        final int baseVal = i << 6;//要分配的起始索引，根据第i个位图，如果是0表示0-63进行分配 1表示64-127分配
+        final int baseVal = i << 6;//左移6位，前面高位，存bitmap数组的下标，也就是i。后面bits可用的位置
         //遍历位图的每一位，从最低位开始遍历，0表示没有过
         for (int j = 0; j < 64; j ++) {//j表示位图里第j位，从低位到高位0-63
             if ((bits & 1) == 0) {//取出最低位，为0表示可用
@@ -197,7 +197,7 @@ final class PoolSubpage<T> implements PoolSubpageMetric {
                     break;//等于就不行了，跳出循环
                 }
             }
-            bits >>>= 1;//位图右移，即从低位往高位
+            bits >>>= 1;//位图右移，即从低位往高位，进行比较
         }
         return -1;
     }
