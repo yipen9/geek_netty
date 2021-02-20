@@ -101,7 +101,13 @@ final class PoolSubpage<T> implements PoolSubpageMetric {
         if (-- numAvail == 0) {
             removeFromPool();
         }
-
+        /**
+         *bitmapIdx,当存储的PoolSubpage是16时, 8*1024表示一个page的大小，8*1024/16为512 ， 512/64为8，所以需要8，左移 6位，所以不会冲突
+         *                                                                00001000
+         *                                                       00000010 00000000
+         * 00000000 00000000 00000010 00000000 00000000 00000000 00000000 00000000
+         * 01000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+         */
         return toHandle(bitmapIdx);
     }
 
@@ -203,7 +209,7 @@ final class PoolSubpage<T> implements PoolSubpageMetric {
     }
 
     /**
-     * 如果没有加上0x4000000000000000L，第一次分配bitmapIdx=0，返回的也是2048。这样在后面的initBuf方法就会出问题
+     * 如果没有加上0x4000000000000000L，第一次分配bitmapIdx=0，返回的是2048，会和整页分配的冲突io.netty.buffer.PoolChunk#allocateRun(int)。这样在后面的initBuf方法就会出问题
      * 0x4000000000000000L为高位标示符+bitmapIdx左移32位，不会和高位重叠；+memoryMapIdx低位32位
      * @param bitmapIdx
      * @return
@@ -212,10 +218,6 @@ final class PoolSubpage<T> implements PoolSubpageMetric {
         return 0x4000000000000000L | (long) bitmapIdx << 32 | memoryMapIdx;
     }
 
-    public static void main(String[] args) {
-        System.out.println( 1 << 32 | 1028);
-
-    }
 
     @Override
     public String toString() {
