@@ -20,7 +20,7 @@ public class WeakReferenceDemo {
 
         /* 当从queue里面取出该元素，则变为INACTIVE，Reference.queue = Reference.NULL */
         Reference reference1 = queue.remove();
-        System.out.println(reference1);
+        System.out.println(reference1.get());
     }
 
 
