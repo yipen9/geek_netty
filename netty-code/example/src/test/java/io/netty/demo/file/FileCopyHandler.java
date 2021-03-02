@@ -7,11 +7,12 @@ import io.netty.channel.ChannelProgressiveFutureListener;
 import io.netty.channel.DefaultFileRegion;
 import io.netty.channel.FileRegion;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.util.AttributeKey;
 
 import java.io.RandomAccessFile;
 
 public class FileCopyHandler extends SimpleChannelInboundHandler<String> {
-
+    public static AttributeKey<Boolean> FILE_IS_WRITING_KEY = AttributeKey.valueOf("FILE_IS_WRITING_KEY");
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
         String[] array = msg.split(" ");
@@ -30,7 +31,9 @@ public class FileCopyHandler extends SimpleChannelInboundHandler<String> {
         RandomAccessFile randomAccessFile = new RandomAccessFile(source, "rw");
         DefaultFileRegion defaultFileRegion = new DefaultFileRegion(randomAccessFile.getChannel(), 0l, randomAccessFile.length());
 
-        ctx.writeAndFlush("rev " + randomAccessFile.length() + ";");
+        ctx.channel().writeAndFlush("rev " + target + "abc.rar" + ";");
+
+        ctx.channel().attr(FILE_IS_WRITING_KEY).set(true);
         ChannelFuture channelFuture = ctx.writeAndFlush(defaultFileRegion, ctx.newProgressivePromise());
         channelFuture.addListener(new ChannelProgressiveFutureListener(){
             @Override
@@ -43,5 +46,11 @@ public class FileCopyHandler extends SimpleChannelInboundHandler<String> {
                 System.out.println("process : " + progress * 1.0 / total);
             }
         });
+        if (channelFuture.isDone()) {
+            ctx.channel().attr(FILE_IS_WRITING_KEY).set(null);
+        }
+        if (channelFuture.isSuccess()) {
+            ctx.writeAndFlush("end");
+        }
     }
 }

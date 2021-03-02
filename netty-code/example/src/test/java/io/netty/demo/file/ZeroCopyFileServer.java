@@ -34,6 +34,7 @@ public class ZeroCopyFileServer {
                 .handler(new LoggingHandler(LogLevel.INFO))
                 .channel(NioServerSocketChannel.class)
                 .option(ChannelOption.SO_BACKLOG, 100)//可连接队列
+                .childOption(ChannelOption.TCP_NODELAY, true)
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
@@ -42,7 +43,7 @@ public class ZeroCopyFileServer {
                         cp.addLast(new DelimiterBasedFrameDecoder(1024, delimiter));
                         cp.addLast(new StringDecoder(CharsetUtil.UTF_8));
                         cp.addLast(new FileCopyHandler());
-                        cp.addLast(new StringEncoder(CharsetUtil.UTF_8));
+                        cp.addLast(new StringAndFileEncoder(CharsetUtil.UTF_8));
                     }
                 });
 
