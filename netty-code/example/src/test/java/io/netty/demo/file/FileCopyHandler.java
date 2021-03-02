@@ -31,7 +31,7 @@ public class FileCopyHandler extends SimpleChannelInboundHandler<String> {
         RandomAccessFile randomAccessFile = new RandomAccessFile(source, "rw");
         DefaultFileRegion defaultFileRegion = new DefaultFileRegion(randomAccessFile.getChannel(), 0l, randomAccessFile.length());
 
-        ctx.channel().writeAndFlush("rev " + target + "abc.rar" + ";");
+        ctx.channel().writeAndFlush("rev " + target + "abc.rar " + randomAccessFile.length() + ";");
 
         ctx.channel().attr(FILE_IS_WRITING_KEY).set(true);
         ChannelFuture channelFuture = ctx.writeAndFlush(defaultFileRegion, ctx.newProgressivePromise());
@@ -39,8 +39,10 @@ public class FileCopyHandler extends SimpleChannelInboundHandler<String> {
             @Override
             public void operationComplete(ChannelProgressiveFuture future) throws Exception {
                 System.out.println("done");
-                future.channel().attr(FILE_IS_WRITING_KEY).set(null);
-                future.channel().writeAndFlush("end");
+                future.channel().flush();
+                future.channel().attr(FILE_IS_WRITING_KEY).set(false);
+                future.channel().writeAndFlush("end;");
+                future.channel().flush();
             }
 
             @Override

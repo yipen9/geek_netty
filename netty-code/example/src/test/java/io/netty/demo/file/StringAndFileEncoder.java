@@ -80,7 +80,8 @@ public class StringAndFileEncoder extends MessageToMessageEncoder<CharSequence> 
             return;
         }
 
-        if (ctx.channel().hasAttr(FILE_IS_WRITING_KEY)) {
+        Boolean isFileWriting = ctx.channel().attr(FILE_IS_WRITING_KEY).get();
+        if (isFileWriting != null && isFileWriting) {
             return;
         }
 
