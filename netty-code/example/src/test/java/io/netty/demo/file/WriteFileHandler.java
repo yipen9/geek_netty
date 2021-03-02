@@ -11,40 +11,36 @@ import java.io.RandomAccessFile;
 import static io.netty.demo.file.RevHandler.FILE_LENGTH_KEY;
 import static io.netty.demo.file.RevHandler.REV_FILE_KEY;
 
-public class WriteFileHandler extends SimpleChannelInboundHandler<ByteBuf> {
+public class WriteFileHandler extends ChannelInboundHandlerAdapter {
     int count = 0;
+
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, ByteBuf msg) throws Exception {
-        boolean done = false;
-        if (msg.readableBytes() == 3) {
-            String msgStr = msg.toString(CharsetUtil.UTF_8);
-            if (msgStr.equals("end;")) {
-                done = true;
-                ctx.fireChannelRead(msg);
-            }
-        }
-        if (!done) {
-            if (ctx.channel().hasAttr(REV_FILE_KEY)) {
-                RandomAccessFile randomAccessFile = ctx.channel().attr(REV_FILE_KEY).get();
-                Integer length = ctx.channel().attr(FILE_LENGTH_KEY).get();
+    public void channelRead(ChannelHandlerContext ctx, Object obj) throws Exception {
+        if (ctx.channel().hasAttr(REV_FILE_KEY)) {
+            RandomAccessFile randomAccessFile = ctx.channel().attr(REV_FILE_KEY).get();
+            Integer length = ctx.channel().attr(FILE_LENGTH_KEY).get();
+            if (obj instanceof ByteBuf) {
+                ByteBuf msg = (ByteBuf) obj;
                 if (count + msg.readableBytes() > length) {
-                    ByteBuf byteBuf = msg.readSlice(count + msg.readableBytes() - length);
-                    randomAccessFile.getChannel().write(byteBuf.nioBuffer());
+                    if (count < length) {
+                        ByteBuf byteBuf = msg.readSlice(length - count);
+                        randomAccessFile.getChannel().write(byteBuf.nioBuffer());
+                        byteBuf.release();
+                    }
+                    if (msg.readableBytes() == 4) {
+                        String msgStr = msg.toString(CharsetUtil.UTF_8);
+                        if (msgStr.equals("end;")) {
+                            ctx.fireChannelRead(msg);
+                        }
+                    }
                 }else{
                     count += msg.readableBytes();
                     randomAccessFile.getChannel().write(msg.nioBuffer());
+                    msg.release();
                 }
-
-                if (msg.readableBytes() == 3) {
-                    String msgStr = msg.toString(CharsetUtil.UTF_8);
-                    if (msgStr.equals("end;")) {
-                        ctx.fireChannelRead(msg);
-                    }
-                }
-            }else{
-                msg.retain();
-                ctx.fireChannelRead(msg);
             }
+        }else{
+            ctx.fireChannelRead(obj);
         }
     }
 }

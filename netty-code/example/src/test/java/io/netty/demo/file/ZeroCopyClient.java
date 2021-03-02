@@ -33,7 +33,7 @@ public class ZeroCopyClient {
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ChannelPipeline cp = ch.pipeline();
                         cp.addLast(new WriteFileHandler());
-                        cp.addLast(new DelimiterBasedFrameDecoder(Integer.MAX_VALUE, delimiter));
+                        cp.addLast(new DelimiterBasedFrameDecoder(1024, delimiter));
                         cp.addLast(new StringDecoder(CharsetUtil.UTF_8));
                         cp.addLast(new RevHandler());
                         cp.addLast(new LoggingHandler(LogLevel.INFO));
