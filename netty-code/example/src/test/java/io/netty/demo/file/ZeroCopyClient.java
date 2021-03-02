@@ -32,9 +32,9 @@ public class ZeroCopyClient {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ChannelPipeline cp = ch.pipeline();
-                        cp.addLast(new WriteFileHandler());
+                        cp.addLast("WriteFileHandler", new WriteFileHandler());
                         cp.addLast(new DelimiterBasedFrameDecoder(1024, delimiter));
-                        cp.addLast(new StringDecoder(CharsetUtil.UTF_8));
+                        cp.addLast(new StringAndFileDecoder(CharsetUtil.UTF_8));
                         cp.addLast(new RevHandler());
                         cp.addLast(new LoggingHandler(LogLevel.INFO));
                         cp.addLast(new StringEncoder(CharsetUtil.UTF_8));
@@ -42,7 +42,7 @@ public class ZeroCopyClient {
                 });
 
         ChannelFuture channelFuture = bootstrap.connect("127.0.0.1", 7777).sync();
-        channelFuture.channel().writeAndFlush("cp D:\\elasticsearch\\elasticsearch-7.9.0-windows-x86_64.zip D:\\;");
+        channelFuture.channel().writeAndFlush("cp /Users/yipeng/tmp/Feishu-3.32.3.dmg.zip /Users/yipeng/tmp/;");
         channelFuture.channel().closeFuture().sync();
     }
 }
