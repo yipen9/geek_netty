@@ -39,6 +39,8 @@ public class FileCopyHandler extends SimpleChannelInboundHandler<String> {
             @Override
             public void operationComplete(ChannelProgressiveFuture future) throws Exception {
                 System.out.println("done");
+                future.channel().attr(FILE_IS_WRITING_KEY).set(null);
+                future.channel().writeAndFlush("end");
             }
 
             @Override
@@ -46,11 +48,5 @@ public class FileCopyHandler extends SimpleChannelInboundHandler<String> {
                 System.out.println("process : " + progress * 1.0 / total);
             }
         });
-        if (channelFuture.isDone()) {
-            ctx.channel().attr(FILE_IS_WRITING_KEY).set(null);
-        }
-        if (channelFuture.isSuccess()) {
-            ctx.writeAndFlush("end");
-        }
     }
 }
