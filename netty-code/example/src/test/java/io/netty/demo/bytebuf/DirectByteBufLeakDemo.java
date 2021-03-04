@@ -3,6 +3,7 @@ package io.netty.demo.bytebuf;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.PooledByteBufAllocator;
+import org.junit.Test;
 
 public class DirectByteBufLeakDemo {
     /**
@@ -29,5 +30,10 @@ public class DirectByteBufLeakDemo {
             buf.writeBytes("1234123".getBytes());
         }
         System.out.println(123);
+    }
+
+    @Test
+    public void testRun() {
+        ByteBuf buf = ByteBufAllocator.DEFAULT.directBuffer(1024 * 8 + 2);
     }
 }
