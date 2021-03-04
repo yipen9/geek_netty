@@ -29,7 +29,7 @@ public class ZeroCopyFileServer {
         NioEventLoopGroup work = new NioEventLoopGroup();
         ServerBootstrap serverBootstrap = new ServerBootstrap();
 
-        final ByteBuf delimiter = Unpooled.copiedBuffer(";".getBytes("UTF-8"));
+        final ByteBuf delimiter = Unpooled.wrappedBuffer("\001\001\001".getBytes());
         serverBootstrap.group(boss, work)
                 .handler(new LoggingHandler(LogLevel.INFO))
                 .channel(NioServerSocketChannel.class)

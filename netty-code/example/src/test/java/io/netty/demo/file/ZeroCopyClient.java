@@ -24,7 +24,7 @@ public class ZeroCopyClient {
     public static void main(String[] args) throws IOException, InterruptedException {
 //        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 //        String line = in.readLine();
-        final ByteBuf delimiter = Unpooled.wrappedBuffer(";".getBytes());
+        final ByteBuf delimiter = Unpooled.wrappedBuffer("\001\001\001".getBytes());
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(new NioEventLoopGroup())
                 .channel(NioSocketChannel.class)
@@ -32,9 +32,13 @@ public class ZeroCopyClient {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ChannelPipeline cp = ch.pipeline();
+                        //接受服务器的消息时，首先执行的就是WriteFileHandler
                         cp.addLast(new WriteFileHandler());
-                        cp.addLast(new DelimiterBasedFrameDecoder(1024, delimiter));
-                        cp.addLast(new StringDecoder(CharsetUtil.UTF_8));
+                        //进行字节分隔，分隔符为delimiter。如果文件中也包含这个分隔符可能会存在问题
+                        //FileDelimiterBasedFrameDecoder与DelimiterBasedFrameDecoder的区别是：
+                        // DelimiterBasedFrameDecoder如果到阀值都没有遇到分隔符相关字节会丢掉
+                        cp.addLast(new FileDelimiterBasedFrameDecoder(1024, delimiter));
+                        cp.addLast(new StringAndFileDecoder(CharsetUtil.UTF_8));
                         cp.addLast(new RevHandler());
                         cp.addLast(new LoggingHandler(LogLevel.INFO));
                         cp.addLast(new StringEncoder(CharsetUtil.UTF_8));
@@ -42,7 +46,7 @@ public class ZeroCopyClient {
                 });
 
         ChannelFuture channelFuture = bootstrap.connect("127.0.0.1", 7777).sync();
-        channelFuture.channel().writeAndFlush("cp D:\\elasticsearch\\elasticsearch-7.9.0-windows-x86_64.zip D:\\;");
+        channelFuture.channel().writeAndFlush("cp D:\\elasticsearch\\elasticsearch-7.9.0-windows-x86_64.zip D:\\\001\001\001");
         channelFuture.channel().closeFuture().sync();
     }
 }

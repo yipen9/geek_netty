@@ -11,14 +11,18 @@ import java.io.RandomAccessFile;
 public class RevHandler extends SimpleChannelInboundHandler<String> {
     public static AttributeKey<RandomAccessFile> REV_FILE_KEY = AttributeKey.valueOf("REV_FILE_KEY");
     public static AttributeKey<Integer> FILE_LENGTH_KEY = AttributeKey.valueOf("FILE_LENGTH_KEY");
+    public static AttributeKey<Integer> CURRENT_FILE_LENGTH_KEY = AttributeKey.valueOf("CURRENT_FILE_LENGTH_KEY");
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
         if (msg.equals("end") && ctx.channel().hasAttr(REV_FILE_KEY)) {
+            System.out.println("end!!!!!!!!!!!!!");
             RandomAccessFile randomAccessFile = ctx.channel().attr(REV_FILE_KEY).get();
             randomAccessFile.close();
             ctx.channel().attr(REV_FILE_KEY).set(null);
+            ctx.channel().attr(CURRENT_FILE_LENGTH_KEY).set(null);
             ctx.channel().attr(FILE_LENGTH_KEY).set(null);
+            return;
         }
         String[] array = msg.split(" ");
         if (array.length != 3) {
